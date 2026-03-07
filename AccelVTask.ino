@@ -7,10 +7,10 @@
 
 #define accel_module (0x53)
 #define xyzregister (0x32)
-#define SAMPLES 2048              // Must be power of 2 // SAMPLES * 1/freq (s) every 1/500 seconds I take a data point, and store it: = 4.096 
-#define SAMPLING_FREQ 500     // Hz receommended by Grok
+#define SAMPLES 8192              // Must be power of 2 // SAMPLES * 1/freq (s) every 1/500 seconds I take a data point, and store it: = 4.096 
+#define SAMPLING_FREQ 2000     // Hz receommended by Grok --> 2000 Hz = 1/2000 S
 
-#define configTICK_RATE_HZ 10000 // to make more precise sampling, but will move to hardware timerslong term
+//#define configTICK_RATE_HZ 10000 // to make more precise sampling, but will move to hardware timerslong term
 
 #define accel_module (0x53)
 #define dataPin4 14
@@ -27,6 +27,7 @@
 
 volatile bool InitialHeaderPrint = false;
 float CalculatedFreq = 0.0f;
+float CalculatedFreq2 = 0.0f;
 //int16_t SampleData[SamplingLength] = {};
 //unsigned long AssociatedTimesFreqData[TimeStore] = {};
 //float AssociatedFrequencies[TimeStore] = {}; // updates every second for 180 seconds
@@ -36,7 +37,7 @@ volatile bool checking = false;
 // bool not needed for now as long as button Read switches: bool waitingForRelease = false;
 volatile bool printed = false;
 //ui counterData = 0; Depcrecated
-double bin_width = 500.0/2048;
+double bin_width = 2000.0/8192.0;
 volatile bool calculated = false;
 
 
@@ -62,7 +63,7 @@ long unsigned int * serialptr2 = NULL;
 int16_t * CalculatedPtr = NULL;
 volatile bool switched = false;
 volatile bool printed2 = false;
-bool SerialPrinted = true;
+//bool SerialPrinted = true;
 
 
 
@@ -71,7 +72,8 @@ const float alpha = 0.1f;
 uint16_t counter = 0;
 unsigned long currentTime = 0;
 unsigned long previousTime = 0;
-uint8_t maxIndex = 0;
+uint16_t maxIndex = 0;
+uint16_t secondIndex = 0;
 double maxVal;
 // deprecated - volatile float timeDelay; // may change to reg int num depending on result
 char ToPrint[20];
@@ -86,27 +88,29 @@ volatile bool buttonRead = true;
 
 int i = 0; 
 
-TaskHandle_t Sensing_task = NULL, Calculating_task = NULL, LCDPrinting_task = NULL, SerialPrinting_task = NULL;
+TaskHandle_t Sensing_task = NULL, Calculating_task = NULL, LCDPrinting_task = NULL; //, SerialPrinting_task = NULL;
 
 //hardware timing because clearly we are not intervalling right:
 
-hw_timer_t *sampleTimer = nullptr;
+hw_timer_t *timer = nullptr;
+portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED; // Create Mutex
   
+volatile bool sampleReady = false;
 
-void IRAM_ATTR onSampleTimer() {
-    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 
-    xTaskNotifyFromISR(
-        Sensing_task,
-        0,
-        eNoAction,
-        &xHigherPriorityTaskWoken
-    );
+void applyIIR(int16_t ZVAL) {
+  filterVal = (alpha * ZVAL) + ((1 - alpha) * (filterVal));
 
-    if (xHigherPriorityTaskWoken) {
-        portYIELD_FROM_ISR();
-    }
 }
+
+void IRAM_ATTR onTimer(){
+  BaseType_t higherPriorityTaskWoken = pdFALSE; // essentially 0, and we check, upon freeRTOS trying to wake sensing from vTaskNotify, if ready to run, we store
+  vTaskNotifyGiveFromISR(Sensing_task, &higherPriorityTaskWoken);
+  portYIELD_FROM_ISR(higherPriorityTaskWoken); // if that higherpriority task woken is pdTrue, go time 
+
+}
+
+
 
 
 //why void * params? --> void foo(int *p) {
@@ -120,7 +124,8 @@ void Sensing(void * parameters){
   //TickType_t lastWakeTime = xTaskGetTickCount();
   
     for(;;){
-    ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+    ulTaskNotifyTake(pdTRUE, portMAX_DELAY);// interact with Interrup service routine onTImer ( ) func
+     // phenomenal because this task will take up 0 CPU, and allow watch dog to do IDLE tasks until it's time for the notify. It basically blocks the for, while telling watchdog you can continue.
 
     Wire.beginTransmission(accel_module);
     Wire.write(xyzregister); // send value 50
@@ -160,8 +165,10 @@ void Sensing(void * parameters){
 
     applyIIR(z_raw); 
 
-    
+   
 
+    
+    portENTER_CRITICAL(&timerMux); // might need to sempahore this instead of crit section it
     // deprecated - if(currentTime - previousTime >= timeDelay){
       // deprecated - previousTime = currentTime;
       if(counter == SAMPLES - 1){
@@ -187,7 +194,7 @@ void Sensing(void * parameters){
       counter++;
       }
     //}
-
+    portEXIT_CRITICAL(&timerMux); // let's use a mutex to ensure there's no weird access going on.
     }
 
 
@@ -204,16 +211,17 @@ void Calculating(void * parameters){
   for(;;){
   
   if (calculated == false && switched == true){
-
+  //portENTER_CRITICAL(*timerMux); // flip is usually atomic, but just in case, mutexing here could be valuable,
   if (ptr1 == &Samples1[0]){
     CalculatedPtr = &Samples2[0];
-    serialptr2 = &AssociatedTimesData2[0];
+    //serialptr2 = &AssociatedTimesData2[0];
 
   }
   else{
     CalculatedPtr = &Samples1[0];
-    serialptr2 = &AssociatedTimesData1[0];
+    //serialptr2 = &AssociatedTimesData1[0];
   }
+  //portEXIT_CRITICAL(&timerMux);
 
   switched = false;
 
@@ -228,18 +236,33 @@ void Calculating(void * parameters){
         FFT.compute(vReal, vImag, SAMPLES, FFT_FORWARD);
         FFT.complexToMagnitude(vReal, vImag, SAMPLES);
 
-      maxIndex = 0;
-        maxVal = vReal[0];
-        for (int i = 0; i <= SAMPLES/2; i++){ // for a freq of 500, we're looking at reliable and unique readings from index 0 to 250 since nyqiuist theorem exists   
+
+        if(vReal[0] > vReal[1]){
+          maxIndex = 0;
+          maxVal = vReal[0];
+          secondIndex = 1;
+        }
+        else{
+          maxIndex = 1;
+          maxVal = vReal[1];
+          secondIndex = 0;
+        }
+
+
+        for (int i = 2; i <= SAMPLES/2; i++){ // for a freq of 500, we're looking at reliable and unique readings from index 0 to 250 since nyqiuist theorem exists   
         if (vReal[i] > maxVal){
-          maxIndex = i; // NEED TO MULTIPLY MAX INDEX BY BIN WIDTH = fs / Num samples
+          secondIndex = maxIndex; // NEED TO MULTIPLY MAX INDEX BY BIN WIDTH = fs / Num samples
+          maxIndex = i;
           maxVal = vReal[i];
+          
         }
       }
+    
   CalculatedFreq = roundf((float(maxIndex * bin_width))*1000.0f) / 1000.0f;
+  CalculatedFreq2 = roundf((float(secondIndex * bin_width))*1000.0f) / 1000.0f; // ensure this float works, and then go edit lcd printing to pring out CalculatedFreq2
   calculated = true; 
   printed2 = false;
-  SerialPrinted = false;
+  //SerialPrinted = false;
 
   }
 
@@ -255,10 +278,10 @@ void LCDPrinting(void * parameters){
 
       for(;;){
       if (!calibrated && !printed){
-        lcd.setCursor(0,3);
+        lcd.setCursor(0,0);
         sprintf(ToPrint, "Waiting...");
         lcd.print(ToPrint);
-        lcd.setCursor(0,4);
+        lcd.setCursor(0,1);
         sprintf(ToPrint, "Not Calib.");
         lcd.print(ToPrint);
         printed = true;
@@ -266,16 +289,19 @@ void LCDPrinting(void * parameters){
 
       if (printed && calibrated){ // food for thought later, we can make this it's own task and then delete it to pursue efficiency, keet that in mind
         lcd.clear();
-        lcd.setCursor(0,4);
+        lcd.setCursor(0,0);
         sprintf(ToPrint, "Calib.");
         lcd.print(ToPrint);
         printed = false;
 
       }
-      if (calculated && !printed2){
+      if (calibrated && calculated && !printed2){
       
       sprintf(ToPrint, "fq: %.3f hz   ", CalculatedFreq); // precision up to 3 decimal points
       lcd.setCursor(0, 1);
+      lcd.print(ToPrint);
+      sprintf(ToPrint,  "fq2: %.3f hz   ", CalculatedFreq2);
+      lcd.setCursor(0, 2);
       lcd.print(ToPrint);
       printed2 = true;
       }
@@ -293,6 +319,8 @@ void LCDPrinting(void * parameters){
   
 }
 
+/*
+
 void SerialPrinting(void * parameters){
     //const TickType_t SerialDelay = pdMS_TO_TICKS(2);
     //TickType_t lastWakeTimeSerial = xTaskGetTickCount();
@@ -309,10 +337,10 @@ void SerialPrinting(void * parameters){
   }
   if (calibrated && calculated && !SerialPrinted){  // need to figure out this and below, and then we should be good. This is a good reason to understand mutexes and queue // althout keep in mind queue isn't good for long arrays/ better yet Task Notfies are better than mutexes, we shoudl implement both
 
-for(int k = 0; k < sizeof(Samples1)/sizeof(ptr1[0]); k++){
-  Success = snprintf(CSVBuffer,sizeof(CSVBuffer), "%lu,%d,%.3f\n", serialptr2[k], CalculatedPtr[k], CalculatedFreq);
-  Serial.print(CSVBuffer);
-  }
+    for(int k = 0; k < sizeof(Samples1)/sizeof(ptr1[0]); k++){
+      Success = snprintf(CSVBuffer,sizeof(CSVBuffer), "%lu,%d,%.3f\n", serialptr2[k], CalculatedPtr[k], CalculatedFreq);
+      Serial.print(CSVBuffer);
+      }
 
   SerialPrinted = true;
   }
@@ -328,19 +356,18 @@ for(int k = 0; k < sizeof(Samples1)/sizeof(ptr1[0]); k++){
 
 }
 
+*/
 
-void applyIIR(int16_t NewVal) {
-  filterVal = (alpha * NewVal) + ((1 - alpha) * (filterVal));
-}
 
 void setup() {
   // put your setup code here, to run once:
   pinMode(buttonInputPin, INPUT);
 
-  Wire.begin(21,22);
+  Wire.begin(21,22); //BLUE 21 SDA data pin ,22 GREEN SCL clock pin
   Wire.setClock(400000); // lets do fast I2C to support the sampling Default is usually 100 KHZ
   lcd.begin(20, 4);
-  Serial.begin(9600);
+  Serial.begin(115200);
+  delay(100);
 
   Wire.beginTransmission(accel_module); // remember that accel_module is an address
   Wire.write(0x2D); //bite with value 45
@@ -358,26 +385,28 @@ void setup() {
   Wire.write(8); // disable sleep mode 
   Wire.endTransmission();
 
-
   xTaskCreatePinnedToCore(
     Sensing,
     "Active_Accel_Sensing",
-    8000, // might be wise to calculate stack size (in words)
+    5500, // might be wise to calculate stack size (in words)
     NULL, // 
     6, // highest prio as possible without getting rid of system tasks
     &Sensing_task, // pass in reference to TaskHandle_t
     1 //core 1 for important stuff
   );
 
+/* Inactive for Efficicency
   xTaskCreatePinnedToCore(
     SerialPrinting,
     "Serial_Printing",
-    8000, // might be wise to calculate stack size (in words)
+    9000, // might be wise to calculate stack size (in words)
     NULL, // 
     4, // highest prio as possible without getting rid of system tasks
     &SerialPrinting_task, // pass in reference to TaskHandle_t
     0 //core 0 for less important stuff that will take time.
   );
+
+  */ 
 
   xTaskCreatePinnedToCore(
     LCDPrinting,
@@ -392,28 +421,29 @@ void setup() {
   xTaskCreatePinnedToCore(
     Calculating,
     "Calcs",
-    8000, // might be wise to calculate stack size (in words)
+    9000, // might be wise to calculate stack size (in words)
     NULL, // 
     5, // highest prio as possible without getting rid of system tasks
     &Calculating_task, // pass in reference to TaskHandle_t
     1 //core 0 for less important stuff that will take time.
   );
 
-sampleTimer = timerBegin(
-    0,        // timer 0
-    80,       // prescaler → 80 MHz / 80 = 1 MHz (1 µs ticks)
-    true
-);
+  timer = timerBegin(1000000); // input is frequency: given 1/1000000 = 1/10^-6 seconds, multiply by 10^6 to get to 1 microseconds: 1 tick is 1 microsecond
+  //deprecated comment: 1 tick = 1 microsedcond if clock standard is 80 MHZ: 80MHZ/80 = 1MHZ: run at 1 MHZ for each tick, 10^-6 seconds: for what 500Hz sampling: 0.002 seconds (2 milliseconds) 2000 microseconds to 2 milliseconds
+ if (timer == NULL) {
+    Serial.println("Timer init failed!");  // or handle error
+  }
 
-timerAttachInterrupt(sampleTimer, &onSampleTimer, true);
 
-timerAlarmWrite(
-    sampleTimer,
-    2000,     // 2000 µs → 2 ms → 500 Hz
-    true
-);
 
-timerAlarmEnable(sampleTimer);
+  timerAttachInterrupt(timer, &onTimer); //attach ISR task 
+
+  timerAlarm(timer, 500, true,0); //2000 ticks, true for count up , true for timer reload, so that we immediately rearm the timer to go off again.  : 0 for unlimited reloads, a num > 0 specifies that we have a limited number of re arms; oly works for true as you can imagine
+
+  timerStart(timer);
+
+ 
+
 
 
   vTaskDelete(NULL); //cancel loop, and setup() has already run.
