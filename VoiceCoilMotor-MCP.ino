@@ -1,12 +1,14 @@
 #include <iostream>
 #include <Wire.h>
 #include <Adafruit_MCP4725.h>
+#include <cstdio>
 
 #define MCPaddy (0x60)
 
 #define SAMPLES 64
 
 #define PotientiometerPin 26
+
 
 
 //addy is in fact 60 after troublshoot
@@ -37,16 +39,26 @@ Addy is not 62Addy is 60
 
 Adafruit_MCP4725 dac;
 
-uint8_t Oscilfreq = 1; // start at 1 HZ
+uint8_t Oscilfreq = 3; // start at 1 HZ
 uint16_t i = 0;
 unsigned long CurrentTime = 0;
 unsigned long PreviousTime = 0;
-unsigned long TimeDelay;
+long double TimeDelay;
 //unsigned long PreviousTime2 = 0;
 //unsigned long CurrentTime2 = 0;
 uint16_t PrevAnalogInput = 0;
 uint16_t NewAnalogInput;
 
+//hw_timer_t *timer = nullptr;
+
+TaskHandle_t SerialPrinting_task = NULL;
+
+SemaphoreHandle_t voltageMutex = xSemaphoreCreateMutex();// create mutex 
+SemaphoreHandle_t PrintMutex = xSemaphoreCreateMutex(); //serial semaphore
+
+uint8_t RecordedOscilfreq = 0;
+
+char CharOut[5];
 
 /*
 const PROGMEM uint16_t DACLookup_FullSine_9Bit[SAMPLES] =
@@ -192,18 +204,45 @@ const PROGMEM uint16_t DACLookup_FullSine_6Bit[64] =
    600,  749,  910, 1082, 1264, 1453, 1648, 1847
 };
 
+void updateTimeDelay(uint16_t NewAnalogValue){
+  
+      Oscilfreq = map(NewAnalogValue, 0, 4095, 3, 95);
+  
+      // want to go up and down at this frequency: freq = 1/T Need to go through 64 samples in this period T/64, is how fast we move, T/Samples: seconds wise: 1/freq = total  Period / samples for seconds Multiply by 10^6 to get micro seconds
+
+      TimeDelay = (1000000.0 /(((Oscilfreq * 10)/10.0l) * SAMPLES)); // I need to go through a whole wave in the 9 bit resolution at a desired freuquency so i divide by num samples to get to the time between each value
+      // prev : ((1.0/Oscilfreq) / SAMPLES) * (1e6);
+      //assign unsighned long to 1e6
+}
+
+
+
+void SerialPrinting(void* paramters){
+for(;;){
+
+  // second precision on the value
+  
+  if(xSemaphoreTake(voltageMutex, 0)){
+    RecordedOscilfreq = Oscilfreq;
+    snprintf(CharOut, sizeof(CharOut), "%d\n", RecordedOscilfreq);
+    xSemaphoreGive(voltageMutex);
+    Serial.print(CharOut);
+    
+  }
+  else{
+    snprintf(CharOut, sizeof(CharOut), "adj\n");
+    Serial.print(CharOut);
+    
+    
+  }
+
+  vTaskDelay(pdMS_TO_TICKS(1500));
+}
+}
 
 
 //possible bit vaues: 5,6,7,8,9
 //#define DAC_RESOLUTION    (9)
-
-void updateTimeDelay(uint16_t NextAnalogValue){
-      Oscilfreq = map(NextAnalogValue, 0, 4095, 4, 90);
-
-      TimeDelay = (1000000UL /(Oscilfreq * SAMPLES)); // I need to go through a whole wave in the 9 bit resolution at a desired freuquency so i divide by num samples to get to the time between each value
-      // prev : ((1.0/Oscilfreq) / SAMPLES) * (1e6);
-      //assign unsighned long to 1e6
-}
 
 
 //for sin wave, 9 bits is best without steps
@@ -215,7 +254,19 @@ void setup() {
   Wire.setClock(400000);
   Serial.print("MCP4725A1 Test");
   dac.begin(MCPaddy);
-  TimeDelay = (1000000UL /(Oscilfreq * SAMPLES)); 
+  TimeDelay = (1000000.0 /(((Oscilfreq * 10)/10.0l) * SAMPLES)); 
+
+  
+
+   xTaskCreatePinnedToCore(
+    SerialPrinting,
+    "Printing to the serial",
+    4000, // might be wise to calculate stack size (in words)
+    NULL, // 
+    3, // highest prio as possible without getting rid of system tasks
+    &SerialPrinting_task, // pass in reference to TaskHandle_t
+    0 //core 0 for less important stuff that will take time.
+  );
   
  
   
@@ -233,10 +284,12 @@ void loop() {
           NewAnalogInput = analogRead(PotientiometerPin);
 
 
-        if (abs(NewAnalogInput - PrevAnalogInput) >= 30){
+        if (abs(NewAnalogInput - PrevAnalogInput) >= 17){
+          if(xSemaphoreTake(voltageMutex, 0)){
           updateTimeDelay(NewAnalogInput);
           PrevAnalogInput = NewAnalogInput;
-          
+          xSemaphoreGive(voltageMutex);
+          }
         }
         
        
