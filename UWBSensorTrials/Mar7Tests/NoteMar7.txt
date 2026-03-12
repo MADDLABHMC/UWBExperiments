@@ -1,0 +1,7 @@
+
+Grid System Wise:
+
+TrueLocationXInches = 26.5 # true location 25.5 - 26.5 100% confidence mar 7 update
+TrueLocationYInches = 25.5 
+
+March 7th tests where Mar7_0Hz is the baseline
