@@ -2,10 +2,12 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 import numpy as np
-from matplotlib.animation import FuncAnimation
+#from matplotlib.animation import FuncAnimation
 import os 
 import regex as re
-from matplotlib.backends.backend_pdf import PdfPages
+from matplotlib.backends.backend_pdf import PdfPages as pdf
+from datetime import datetime
+import math
 
 
 
@@ -68,7 +70,7 @@ def __main__():
 #dfFifth = pd.read_csv(filename5)
 
 
-    fig, ax = plt.subplots(nrows = 2, ncols = len(csvs), figsize = (20,10))
+    #fig, ax = plt.subplots(nrows = 2, ncols = len(csvs), figsize = (20,10))
     
     try:
         GlobalX = float(input("Please enter your True X position in meters: "))
@@ -80,8 +82,86 @@ def __main__():
         
     except ValueError:
         print("You did not enter a valid input.")
+        
+    OfficialNow = str(datetime.now().strftime("D%Y_%m_%d-T%H-%M-%S"))
+    #str is redundant but whatever
+
+        
+    if("RawOutputReports" not in os.listdir()): 
+        os.makedirs("RawOutputReports", mode=0o777, exist_ok=False)
     
-    for i in range(len(OrderedKeys)):
+    FullNumPages = math.floor(len(OrderedKeys)/2)
+    RemainderGraphs = len(OrderedKeys) % 2
+    #if int(FullNumPages) < 1:
+        #raise ValueError("You don't have enough data to generate a solid report.")
+    
+    Counter = 0
+    PageCounter = 1
+    
+    with pdf(f'RawOutputReports/{OfficialNow}-{InputSelection}.pdf') as file:
+        plt.rcParams["figure.figsize"] = (11, 8.5)
+        
+        if(int(FullNumPages) > 0):
+            for pagenum in range(0,int(FullNumPages)):
+                fig, ax = plt.subplots(nrows = 2, ncols = 2, figsize = (11,8.5))
+                for i in range(0, 2):
+                    ax[0][i].plot(ListDfDict[OrderedKeys[Counter + i]]['#Time'],ListDfDict[OrderedKeys[Counter + i]]['X'], color = 'blue')
+                    ax[0][i].set_title(f'{OrderedKeys[Counter + i]} Hz')
+                    ax[0][i].set_xlabel('time (s)')
+                    ax[0][i].set_ylabel('X (m)')
+                    ax[0][i].plot(np.array([ListDfDict[OrderedKeys[Counter + i]]['#Time'].iloc[0],ListDfDict[OrderedKeys[Counter + i]]['#Time'].iloc[-1]]),np.array([GlobalX, GlobalX]),color = 'red')
+                        ## switch from x on first row to Y on bottom row
+                    ax[1][i].plot(ListDfDict[OrderedKeys[Counter + i]]['#Time'],ListDfDict[OrderedKeys[Counter + i]]['Y'], color = 'blue')
+                    ax[1][i].set_xlabel('time (s)')
+                    ax[1][i].set_ylabel('Y (m)')
+                    ax[1][i].plot(np.array([ListDfDict[OrderedKeys[Counter + i]]['#Time'].iloc[0],ListDfDict[OrderedKeys[Counter + i]]['#Time'].iloc[-1]]),np.array([GlobalY, GlobalY]), color = 'red')
+                    ax[1][i].grid(True, alpha = 0.3)
+                    ax[0][i].grid(True, alpha = 0.3)
+                Counter += 2
+                fig.suptitle(f'Page {PageCounter}')
+                PageCounter += 1
+                file.savefig(fig)
+                plt.close(fig)
+        if(int(RemainderGraphs) > 0):
+            fig, ax = plt.subplots(nrows = 2, ncols = int(RemainderGraphs), figsize = (11,8.5))
+            for i in range(int(RemainderGraphs)):
+                ax[0][i].plot(ListDfDict[OrderedKeys[Counter + i]]['#Time'],ListDfDict[OrderedKeys[Counter + i]]['X'], color = 'blue')
+                ax[0][i].set_title(f'{OrderedKeys[Counter + i]} Hz')
+                ax[0][i].set_xlabel('time (s)')
+                ax[0][i].set_ylabel('X (m)')
+                ax[0][i].plot(np.array([ListDfDict[OrderedKeys[Counter + i]]['#Time'].iloc[0],ListDfDict[OrderedKeys[Counter + i]]['#Time'].iloc[-1]]),np.array([GlobalX, GlobalX]), color = 'red')
+                        ## switch from x on first row to Y on bottom row
+                ax[1][i].plot(ListDfDict[OrderedKeys[Counter + i]]['#Time'],ListDfDict[OrderedKeys[Counter + i]]['Y'], color = 'blue')
+                ax[1][i].set_xlabel('time (s)')
+                ax[1][i].set_ylabel('Y (m)')
+                ax[1][i].plot(np.array([ListDfDict[OrderedKeys[Counter + i]]['#Time'].iloc[0],ListDfDict[OrderedKeys[Counter + i]]['#Time'].iloc[-1]]),np.array([GlobalY, GlobalY]), color = 'red')
+                ax[1][i].grid(True, alpha = 0.3)
+                ax[0][i].grid(True, alpha = 0.3)
+            Counter += RemainderGraphs
+            fig.suptitle(f'Page {PageCounter}')
+            PageCounter += 1
+            file.savefig(fig)
+            plt.close(fig)
+                
+                
+      
+    print(f'Succesful pdf Write of {PageCounter-1} pages and {Counter} graphs.')
+
+    
+    with open(f'RawOutputReports/{OfficialNow}-{InputSelection}.info', 'w') as file:
+        file.write(f'Chosen true X position in meters: {GlobalX}\n')
+        file.write(f'Chosen true Y position in meters: {GlobalY}\n')
+        file.write(f'files analyzed {" ".join(csvs)}\n')
+        file.write(f'Frequencies in impact Hz: {" ".join([str(strings) for strings in OrderedKeys])}\n')
+        file.write(f'{Counter} graphs and {PageCounter - 1} pages succesfully written')
+    
+    print(f'Info file succesfully written')
+        
+        
+    
+    
+# Problematic becuase we want max 3 on a page
+"""  for i in range(len(OrderedKeys)):
         ax[0][i].plot(ListDfDict[OrderedKeys[i]]['#Time'], ListDfDict[OrderedKeys[i]]['X'])
         ax[0][i].set_title(f'{OrderedKeys[i]} Hz X')
         ax[0][i].set_xlabel("Time (s)")
@@ -91,13 +171,15 @@ def __main__():
         ax[1][i].set_xlabel("Time (s)")
         ax[1][i].set_ylabel("Y pos (m)")
         ax[0][i].grid(True)
-        ax[1][i].grid(True)
+        ax[1][i].grid(True) 
+"""
+        
+
         
         
         
         
-        
-    plt.show()
+    #plt.show()
         
         
         

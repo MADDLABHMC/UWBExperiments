@@ -30,9 +30,11 @@ def __main__():
     FOLDERINPUT = input("Make sure there is a folder with a Note txt file and all your txt outputs. \n The program will automatically take away any extra folders and note files as long as 'Note' is in the file name. \n Input exact folder for processing of text files: ")
     file_names = os.listdir(FOLDERINPUT)
     # at this point we need to parse for "Note"
+    if(f'{FOLDERINPUT}_Translated_To_CSV' in file_names):
+        raise Exception("You already have a Translated Folder, please figure out the situation.")
     file_names = [x for x in file_names if (".txt" in x.lower()) and ("note" not in x.lower())]
     print(file_names)
-    os.mkdir(f'{FOLDERINPUT}/{FOLDERINPUT}_Translated_To_CSV', mode = 0o755)
+    os.mkdirs(f'{FOLDERINPUT}/{FOLDERINPUT}_Translated_To_CSV', mode = 0o755, exist_ok = False)
     print("Directory properly created.")
     for FILENAME in file_names:
         with open(f'{FOLDERINPUT}/{FILENAME}', 'r') as file:
