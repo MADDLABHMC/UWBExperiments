@@ -18,6 +18,7 @@ import math
 
 
 
+
 ListDfDict = {}
 GlobalX = 0
 GlobalY = 0
@@ -71,18 +72,50 @@ def __main__():
 
 
     #fig, ax = plt.subplots(nrows = 2, ncols = len(csvs), figsize = (20,10))
+    DictionaryHzToTimeRange = {}
     
     try:
-        GlobalX = float(input("Please enter your True X position in meters: "))
-        GlobalY = float(input("Please enter your True Y position in meters: "))
-        if(len(str(GlobalX).split(".")[1]) > 2):
-            GlobalX = round(GlobalX, 2)
-        if(len(str(GlobalY).split(".")[1]) > 2):
-            GlobalY = round(GlobalY, 2)
+        GlobalX = float(input("Please enter your True X position in meters (ex = 3.12):"))
+        GlobalY = float(input("Please enter your True Y position in meters (ex = 3.12): "))
+    except ValueError as e:
+        raise ValueError(f'Invalid Input: {e}') 
+    if(len(str(GlobalX).split(".")[1]) > 2):
+        GlobalX = round(GlobalX, 2)
+    if(len(str(GlobalY).split(".")[1]) > 2):
+        GlobalY = round(GlobalY, 2)
+            
+    print("\n")
+    print("You will now select time ranges for plots. By default graphs will keep their usual time record if you do not specify a range for a graph.\n A query loop will follow allowing you to edit different plots.")
+    while(True):
+        GraphsInput = str(input("Please specify plots you would like to edit timeranges by Hz in the form example of '3,9,11,60,120'. \nOr, press empty enter for default:"))
+        if(GraphsInput.lower() == ""):
+            break
+            
+        try:
+            reObject = re.split(r'\s*,\s*', GraphsInput)
+            reObject = [int(x) for x in reObject]
+            for el in reObject:
+                if el not in OrderedKeys:
+                    raise ValueError(f'You entered a Hz input {el} that is not provided in the data you have.')
+        except ValueError:
+            raise
+        except Exception:
+            raise ValueError("Unable to parse the Hz inputs, please try again.")
+       
+        try:
+            TimeNot = round(float(input("For these plots, please enter the beginning time you would like to plot for (ex = 30.290):")), 3)
+            print(f'Entered initial time: {TimeNot}')
+            TimeFinal = round(float(input("Please enter the final time you would like to plot for (ex = 30.290):")), 3)
+            print(f'Entered final time: {TimeFinal}')
+            print(f'Range of {str(TimeFinal - TimeNot)}')
+        except ValueError:
+            raise ValueError("You did not enter a valid time.")
+                
+        for elem in reObject:
+            DictionaryHzToTimeRange[elem] = [TimeNot,TimeFinal]   
+
         
-    except ValueError:
-        print("You did not enter a valid input.")
-        
+      
     OfficialNow = str(datetime.now().strftime("D%Y_%m_%d-T%H-%M-%S"))
     #str is redundant but whatever
 
