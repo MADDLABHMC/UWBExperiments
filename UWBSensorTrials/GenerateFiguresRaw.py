@@ -60,6 +60,7 @@ def __main__():
         df = pd.read_csv(f'{InputSelection}/{InputSelection}_Translated_To_CSV/{files}')
         ListDfDict[int(files[files.index("_")+1:re.search(r'Hz', files).start()])] = df
     print("Data Frames Created")
+    #print(ListDfDict[0]["#Time"]) dtype is float64 
     print(f'Dict status in Hz: {ListDfDict.keys()}')
     OrderedKeys = list(ListDfDict.keys()) 
         
@@ -77,7 +78,7 @@ def __main__():
     try:
         GlobalX = float(input("Please enter your True X position in meters (ex = 3.12):"))
         GlobalY = float(input("Please enter your True Y position in meters (ex = 3.12): "))
-    except ValueError as e:
+    except Exception as e:
         raise ValueError(f'Invalid Input: {e}') 
     if(len(str(GlobalX).split(".")[1]) > 2):
         GlobalX = round(GlobalX, 2)
@@ -87,7 +88,7 @@ def __main__():
     print("\n")
     print("You will now select time ranges for plots. By default graphs will keep their usual time record if you do not specify a range for a graph.\n A query loop will follow allowing you to edit different plots.")
     while(True):
-        GraphsInput = str(input("Please specify plots you would like to edit timeranges by Hz in the form example of '3,9,11,60,120'. \nOr, press empty enter for default:"))
+        GraphsInput = str(input("Please specify hz plots you would like to edit timeranges by Hz in the form example of '3,9,11,60,120'. \nOr, press empty enter for default. You will have the option to edit different plots at a time: "))
         if(GraphsInput.lower() == ""):
             break
             
@@ -107,15 +108,25 @@ def __main__():
             print(f'Entered initial time: {TimeNot}')
             TimeFinal = round(float(input("Please enter the final time you would like to plot for (ex = 30.290):")), 3)
             print(f'Entered final time: {TimeFinal}')
+            if (TimeNot >= TimeFinal):
+                raise ValueError(f'Bad bound selection of Not {TimeNot} and {TimeFinal} timenot selection must be strictly less than time final final.')
             print(f'Range of {str(TimeFinal - TimeNot)}')
+            
+            for elem in reObject:
+                BeginningIndex = ListDfDict[elem]["#Time"].searchsorted(TimeNot, side = "left")
+                LastIndex =  ListDfDict[elem]["#Time"].searchsorted(TimeFinal, side = "right")
+                if (LastIndex > len(ListDfDict[elem]["#Time"]) or BeginningIndex >= len(ListDfDict[elem]["#Time"])):
+                    raise ValueError(f'{TimeNot} or {TimeFinal} is out of the alloted time range. Pleast try again.')
+                DictionaryHzToTimeRange[elem] = [BeginningIndex,LastIndex] # side = False means exact index, side = right means right the value.
+                    
         except ValueError:
-            raise ValueError("You did not enter a valid time.")
-                
-        for elem in reObject:
-            DictionaryHzToTimeRange[elem] = [TimeNot,TimeFinal]   
+            raise 
 
-        
-      
+    for element in OrderedKeys:
+        if element not in DictionaryHzToTimeRange:
+            DictionaryHzToTimeRange[element] = [0,len(ListDfDict[element]['#Time'])]
+    
+    
     OfficialNow = str(datetime.now().strftime("D%Y_%m_%d-T%H-%M-%S"))
     #str is redundant but whatever
 
@@ -138,16 +149,17 @@ def __main__():
             for pagenum in range(0,int(FullNumPages)):
                 fig, ax = plt.subplots(nrows = 2, ncols = 2, figsize = (11,8.5))
                 for i in range(0, 2):
-                    ax[0][i].plot(ListDfDict[OrderedKeys[Counter + i]]['#Time'],ListDfDict[OrderedKeys[Counter + i]]['X'], color = 'blue')
+                    ax[0][i].plot(ListDfDict[OrderedKeys[Counter + i]]['#Time'].iloc[DictionaryHzToTimeRange[OrderedKeys[Counter + i]][0]:DictionaryHzToTimeRange[OrderedKeys[Counter + i]][1]],ListDfDict[OrderedKeys[Counter + i]]['X'].iloc[DictionaryHzToTimeRange[OrderedKeys[Counter + i]][0]:DictionaryHzToTimeRange[OrderedKeys[Counter + i]][1]], color = 'blue')
                     ax[0][i].set_title(f'{OrderedKeys[Counter + i]} Hz')
-                    ax[0][i].set_xlabel('time (s)')
+                    ax[0][i].set_xlabel('Time (s)')
                     ax[0][i].set_ylabel('X (m)')
-                    ax[0][i].plot(np.array([ListDfDict[OrderedKeys[Counter + i]]['#Time'].iloc[0],ListDfDict[OrderedKeys[Counter + i]]['#Time'].iloc[-1]]),np.array([GlobalX, GlobalX]),color = 'red')
+                    ax[0][i].plot(np.array([ListDfDict[OrderedKeys[Counter + i]]['#Time'].iloc[DictionaryHzToTimeRange[OrderedKeys[Counter + i]][0]],ListDfDict[OrderedKeys[Counter + i]]['#Time'].iloc[(DictionaryHzToTimeRange[OrderedKeys[Counter + i]][1]-1)]]),np.array([GlobalX, GlobalX]),color = 'red')
                         ## switch from x on first row to Y on bottom row
-                    ax[1][i].plot(ListDfDict[OrderedKeys[Counter + i]]['#Time'],ListDfDict[OrderedKeys[Counter + i]]['Y'], color = 'blue')
-                    ax[1][i].set_xlabel('time (s)')
+                    ax[1][i].plot(ListDfDict[OrderedKeys[Counter + i]]['#Time'].iloc[DictionaryHzToTimeRange[OrderedKeys[Counter + i]][0]:DictionaryHzToTimeRange[OrderedKeys[Counter + i]][1]],ListDfDict[OrderedKeys[Counter + i]]['Y'].iloc[DictionaryHzToTimeRange[OrderedKeys[Counter + i]][0]:DictionaryHzToTimeRange[OrderedKeys[Counter + i]][1]], color = 'blue')
+                    ax[1][i].set_xlabel('Time (s)')
                     ax[1][i].set_ylabel('Y (m)')
-                    ax[1][i].plot(np.array([ListDfDict[OrderedKeys[Counter + i]]['#Time'].iloc[0],ListDfDict[OrderedKeys[Counter + i]]['#Time'].iloc[-1]]),np.array([GlobalY, GlobalY]), color = 'red')
+                    ax[1][i].plot(np.array([ListDfDict[OrderedKeys[Counter + i]]['#Time'].iloc[DictionaryHzToTimeRange[OrderedKeys[Counter + i]][0]],ListDfDict[OrderedKeys[Counter + i]]['#Time'].iloc[(DictionaryHzToTimeRange[OrderedKeys[Counter + i]][1]-1)]]),np.array([GlobalY, GlobalY]),color = 'red')
+                        # Grid settings
                     ax[1][i].grid(True, alpha = 0.3)
                     ax[0][i].grid(True, alpha = 0.3)
                 Counter += 2
@@ -158,16 +170,17 @@ def __main__():
         if(int(RemainderGraphs) > 0):
             fig, ax = plt.subplots(nrows = 2, ncols = int(RemainderGraphs), figsize = (11,8.5))
             for i in range(int(RemainderGraphs)):
-                ax[0][i].plot(ListDfDict[OrderedKeys[Counter + i]]['#Time'],ListDfDict[OrderedKeys[Counter + i]]['X'], color = 'blue')
+                ax[0][i].plot(ListDfDict[OrderedKeys[Counter + i]]['#Time'].iloc[DictionaryHzToTimeRange[OrderedKeys[Counter + i]][0]:DictionaryHzToTimeRange[OrderedKeys[Counter + i]][1]],ListDfDict[OrderedKeys[Counter + i]]['X'].iloc[DictionaryHzToTimeRange[OrderedKeys[Counter + i]][0]:DictionaryHzToTimeRange[OrderedKeys[Counter + i]][1]], color = 'blue')
                 ax[0][i].set_title(f'{OrderedKeys[Counter + i]} Hz')
                 ax[0][i].set_xlabel('time (s)')
                 ax[0][i].set_ylabel('X (m)')
-                ax[0][i].plot(np.array([ListDfDict[OrderedKeys[Counter + i]]['#Time'].iloc[0],ListDfDict[OrderedKeys[Counter + i]]['#Time'].iloc[-1]]),np.array([GlobalX, GlobalX]), color = 'red')
+                ax[0][i].plot(np.array([ListDfDict[OrderedKeys[Counter + i]]['#Time'].iloc[DictionaryHzToTimeRange[OrderedKeys[Counter + i]][0]],ListDfDict[OrderedKeys[Counter + i]]['#Time'].iloc[(DictionaryHzToTimeRange[OrderedKeys[Counter + i]][1]-1)]]),np.array([GlobalX, GlobalX]),color = 'red')
                         ## switch from x on first row to Y on bottom row
-                ax[1][i].plot(ListDfDict[OrderedKeys[Counter + i]]['#Time'],ListDfDict[OrderedKeys[Counter + i]]['Y'], color = 'blue')
+                ax[1][i].plot(ListDfDict[OrderedKeys[Counter + i]]['#Time'].iloc[DictionaryHzToTimeRange[OrderedKeys[Counter + i]][0]:DictionaryHzToTimeRange[OrderedKeys[Counter + i]][1]],ListDfDict[OrderedKeys[Counter + i]]['Y'].iloc[DictionaryHzToTimeRange[OrderedKeys[Counter + i]][0]:DictionaryHzToTimeRange[OrderedKeys[Counter + i]][1]], color = 'blue')
                 ax[1][i].set_xlabel('time (s)')
                 ax[1][i].set_ylabel('Y (m)')
-                ax[1][i].plot(np.array([ListDfDict[OrderedKeys[Counter + i]]['#Time'].iloc[0],ListDfDict[OrderedKeys[Counter + i]]['#Time'].iloc[-1]]),np.array([GlobalY, GlobalY]), color = 'red')
+                ax[1][i].plot(np.array([ListDfDict[OrderedKeys[Counter + i]]['#Time'].iloc[DictionaryHzToTimeRange[OrderedKeys[Counter + i]][0]],ListDfDict[OrderedKeys[Counter + i]]['#Time'].iloc[(DictionaryHzToTimeRange[OrderedKeys[Counter + i]][1]-1)]]),np.array([GlobalY, GlobalY]),color = 'red')
+                
                 ax[1][i].grid(True, alpha = 0.3)
                 ax[0][i].grid(True, alpha = 0.3)
             Counter += RemainderGraphs
