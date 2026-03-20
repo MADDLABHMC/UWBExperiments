@@ -76,7 +76,7 @@ def __main__():
     DictionaryHzToTimeRange = {}
     
     try:
-        GlobalX = float(input("Please enter your True X position in meters (ex = 3.12):"))
+        GlobalX = float(input("Please enter your True X position in meters (ex = 3.12): "))
         GlobalY = float(input("Please enter your True Y position in meters (ex = 3.12): "))
     except Exception as e:
         raise ValueError(f'Invalid Input: {e}') 
@@ -221,15 +221,16 @@ def __main__():
     
     ### Error calculations
     for element in OrderedKeys:
-        ListDfDict[element]['X Resid.'] = ListDfDict[element]['X'] - GlobalX
-        ListDfDict[element]['Y Resid.'] = ListDfDict[element]['Y'] - GlobalY
+        ListDfDict[element]['X Resid.'] = (ListDfDict[element]['X'] - GlobalX).round(2)
+        ListDfDict[element]['Y Resid.'] = (ListDfDict[element]['Y'] - GlobalY).round(2)
         
         
         
         
         
-        ListDfDict[element]['X Resid. abs'] = ListDfDict[element]['X Resid.'].abs()
-        ListDfDict[element]['Y Resid. abs'] = ListDfDict[element]['Y Resid.'].abs()
+        
+        ListDfDict[element]['X Resid. abs'] = (ListDfDict[element]['X Resid.'].abs()).round(2)
+        ListDfDict[element]['Y Resid. abs'] = (ListDfDict[element]['Y Resid.'].abs()).round(2)
         
         #Max euclidean error report in index 2 of Max RE
         #Structure, X,Y, Max Euclidean
@@ -240,7 +241,7 @@ def __main__():
         
         
         ListDfDict[element]['X Resid. abs sq'] = np.power(ListDfDict[element]['X Resid. abs'],2)
-        ListDfDict[element]['Y Resid. abs sq'] = np.power(ListDfDict[element]['Y Resid. abs'], 2)
+        ListDfDict[element]['Y Resid. abs sq'] = np.power(ListDfDict[element]['Y Resid. abs'],2)
         
         
         #ME section at this point
@@ -250,8 +251,8 @@ def __main__():
         if (len(ListDfDict[element]['X Resid.'].iloc[DictionaryHzToTimeRange[element][0]:DictionaryHzToTimeRange[element][1]]) != len(ListDfDict[element]['Y Resid.'].iloc[DictionaryHzToTimeRange[element][0]:DictionaryHzToTimeRange[element][1]])):
             raise ValueError("You're lengths for X and Y do not match which means errors for calculations. Please Retry.")
         
-        XME = (ListDfDict[element]['X Resid.'].iloc[DictionaryHzToTimeRange[element][0]:DictionaryHzToTimeRange[element][1]].sum())/int(len(ListDfDict[element]['X Resid.'].iloc[DictionaryHzToTimeRange[element][0]:DictionaryHzToTimeRange[element][1]]))
-        YME = (ListDfDict[element]['Y Resid.'].iloc[DictionaryHzToTimeRange[element][0]:DictionaryHzToTimeRange[element][1]].sum())/int(len(ListDfDict[element]['Y Resid.'].iloc[DictionaryHzToTimeRange[element][0]:DictionaryHzToTimeRange[element][1]]))
+        XME = round((ListDfDict[element]['X Resid.'].iloc[DictionaryHzToTimeRange[element][0]:DictionaryHzToTimeRange[element][1]].sum())/int(len(ListDfDict[element]['X Resid.'].iloc[DictionaryHzToTimeRange[element][0]:DictionaryHzToTimeRange[element][1]])),3)
+        YME = round((ListDfDict[element]['Y Resid.'].iloc[DictionaryHzToTimeRange[element][0]:DictionaryHzToTimeRange[element][1]].sum())/int(len(ListDfDict[element]['Y Resid.'].iloc[DictionaryHzToTimeRange[element][0]:DictionaryHzToTimeRange[element][1]])),3)
         
         
         
@@ -261,21 +262,21 @@ def __main__():
         
         ##MAE section
         
-        XMAE = (ListDfDict[element]['X Resid. abs'].iloc[DictionaryHzToTimeRange[element][0]:DictionaryHzToTimeRange[element][1]].sum())/int(len(ListDfDict[element]['X Resid. abs'].iloc[DictionaryHzToTimeRange[element][0]:DictionaryHzToTimeRange[element][1]]))
-        YMAE = (ListDfDict[element]['Y Resid. abs'].iloc[DictionaryHzToTimeRange[element][0]:DictionaryHzToTimeRange[element][1]].sum())/int(len(ListDfDict[element]['X Resid. abs'].iloc[DictionaryHzToTimeRange[element][0]:DictionaryHzToTimeRange[element][1]]))
+        XMAE = round((ListDfDict[element]['X Resid. abs'].iloc[DictionaryHzToTimeRange[element][0]:DictionaryHzToTimeRange[element][1]].sum())/int(len(ListDfDict[element]['X Resid. abs'].iloc[DictionaryHzToTimeRange[element][0]:DictionaryHzToTimeRange[element][1]])),3)
+        YMAE = round((ListDfDict[element]['Y Resid. abs'].iloc[DictionaryHzToTimeRange[element][0]:DictionaryHzToTimeRange[element][1]].sum())/int(len(ListDfDict[element]['X Resid. abs'].iloc[DictionaryHzToTimeRange[element][0]:DictionaryHzToTimeRange[element][1]])),3)
         
         
         
         ListDfDict[element]['X Resid. sq'] = np.power(ListDfDict[element]['X Resid.'], 2)
         ListDfDict[element]['Y Resid. sq'] = np.power(ListDfDict[element]['Y Resid.'], 2)
         
-        ListDfDict[element]['TotalEuclideanDistanceError'] = np.sqrt(ListDfDict[element]['X Resid. sq'] + ListDfDict[element]['Y Resid. sq'])
+        ListDfDict[element]['TotalEuclideanDistanceError'] = (np.sqrt(ListDfDict[element]['X Resid. sq'] + ListDfDict[element]['Y Resid. sq'])).round(3)
         
         IndexMaxEuclideanDistanceError = ListDfDict[element]['TotalEuclideanDistanceError'].iloc[DictionaryHzToTimeRange[element][0]:DictionaryHzToTimeRange[element][1]].idxmax()
         # follows X indivudually, Y indivisdually, and then given info about total euclidean error max wise, all within the correct time period
         MaxRE[element] = [[XAbsMaxErrorIndex,  ListDfDict[element]['#Time'].iloc[XAbsMaxErrorIndex] ,ListDfDict[element]['X Resid.'].iloc[XAbsMaxErrorIndex]],[YAbsMaxErrorIndex,  ListDfDict[element]['#Time'].iloc[YAbsMaxErrorIndex],ListDfDict[element]['Y Resid.'].iloc[YAbsMaxErrorIndex]],[IndexMaxEuclideanDistanceError, ListDfDict[element]['TotalEuclideanDistanceError'].iloc[IndexMaxEuclideanDistanceError],ListDfDict[element]['#Time'].iloc[IndexMaxEuclideanDistanceError], ListDfDict[element]['X Resid.'].iloc[IndexMaxEuclideanDistanceError], ListDfDict[element]['Y Resid.'].iloc[IndexMaxEuclideanDistanceError]]]
         
-        MAGME = np.sqrt(np.power(XME,2) + np.power(YME,2))
+        MAGME = round(np.sqrt(np.power(XME,2) + np.power(YME,2)),3)
     
         
         
@@ -296,7 +297,7 @@ def __main__():
         TwoDRMSE = round(np.sqrt(TotalSumResidSqAve), 3)
         
         #TDMAE will rely on euclidean distance error
-        TDMAE = (np.sqrt(ListDfDict[element]['X Resid. abs sq'].iloc[DictionaryHzToTimeRange[element][0]:DictionaryHzToTimeRange[element][1]] + ListDfDict[element]['Y Resid. abs sq'].iloc[DictionaryHzToTimeRange[element][0]:DictionaryHzToTimeRange[element][1]]).sum())/int(len(ListDfDict[element]['Y Resid. abs sq'].iloc[DictionaryHzToTimeRange[element][0]:DictionaryHzToTimeRange[element][1]]))
+        TDMAE = round((np.sqrt(ListDfDict[element]['X Resid. abs sq'].iloc[DictionaryHzToTimeRange[element][0]:DictionaryHzToTimeRange[element][1]] + ListDfDict[element]['Y Resid. abs sq'].iloc[DictionaryHzToTimeRange[element][0]:DictionaryHzToTimeRange[element][1]]).sum())/int(len(ListDfDict[element]['Y Resid. abs sq'].iloc[DictionaryHzToTimeRange[element][0]:DictionaryHzToTimeRange[element][1]])),3)
         
         FinalRE_Euclidean = round(np.sqrt(ListDfDict[element]['X Resid. sq'].iloc[DictionaryHzToTimeRange[element][1] - 1] + ListDfDict[element]['Y Resid. sq'].iloc[DictionaryHzToTimeRange[element][1] - 1]),3)
         #standard euclidean distance error
@@ -465,6 +466,28 @@ def __main__():
     PageCounter1 = 1
     Counter1 = 0
     
+    
+   
+    #value_counts() and sort_index() mechanism for each Hz
+    IndexCountsX = {}
+    IndexCountsY = {}
+    for element in OrderedKeys:
+        IndexCountsX[element] = ListDfDict[element]['X Resid.'].iloc[DictionaryHzToTimeRange[element][0]:DictionaryHzToTimeRange[element][1]].value_counts().sort_index().astype(float)
+        IndexCountsY[element] = ListDfDict[element]['Y Resid.'].iloc[DictionaryHzToTimeRange[element][0]:DictionaryHzToTimeRange[element][1]].value_counts().sort_index().astype(float)
+        IterationCopyX = IndexCountsX[element].copy()
+        IterationCopyY = IndexCountsY[element].copy()
+        for index in IndexCountsX[element].index:
+            IterationCopyX[index] = round(IndexCountsX[element][index]/(len(ListDfDict[element]['X Resid.'].iloc[DictionaryHzToTimeRange[element][0]:DictionaryHzToTimeRange[element][1]])),3)
+        for index in IndexCountsY[element].index:
+            IterationCopyY[index] = round(IndexCountsY[element][index]/(len(ListDfDict[element]['Y Resid.'].iloc[DictionaryHzToTimeRange[element][0]:DictionaryHzToTimeRange[element][1]])),3)
+        IndexCountsX[element] = IterationCopyX
+        IndexCountsY[element] = IterationCopyY
+        
+            
+        
+       
+        
+    
     with pdf(f'OutputReports/{OfficialNow}-{InputSelection}/{OfficialNow}-{InputSelection}_PercentileError.pdf') as file:
         plt.rcParams["figure.figsize"] = (11, 8.5)
         
@@ -472,27 +495,21 @@ def __main__():
             for pagenum in range(0,int(FullNumPages)):
                 fig, ax = plt.subplots(nrows = 2, ncols = 2, figsize = (11,8.5))
                 for i in range(0, 2):
-                    n, bins, patches = ax[0][i].hist(ListDfDict[OrderedKeys[Counter1 + i]]['X Resid.'].iloc[DictionaryHzToTimeRange[OrderedKeys[Counter1 + i]][0]:DictionaryHzToTimeRange[OrderedKeys[Counter1 + i]][1]], bins = 'fd', color = 'steelblue', edgecolor = 'red', lw = 0.4, rwidth = 1.0)
+                    bars = ax[0][i].bar(IndexCountsX[OrderedKeys[Counter1 + i]].index, IndexCountsX[OrderedKeys[Counter1 + i]].values, color = 'steelblue', edgecolor = 'red', lw = 0.4, width = 0.01)
                     ax[0][i].set_title(f'{OrderedKeys[Counter1 + i]} Hz')
-                    ax[0][i].set_xlabel(f'X #{len(n)} Bins')
-                    ax[0][i].set_ylabel('X Frequency')
-                    ax[0][i].set_xticks(bins)
-                    ax[0][i].set_xticklabels([f'{b:.2f}' for b in bins], rotation=45, fontsize=3)
-                    for count, patch in zip(n, patches):
-                        x = (patch.get_x() + patch.get_width()) / 2  # center of bar
-                        y = patch.get_height()/2                      # top of bar
-                        ax[0][i].text(x, y, str(int(count)), ha='center', va='center', fontsize=3)
+                    ax[0][i].set_xlabel(f'X Residual Values')
+                    ax[0][i].set_ylabel('X Freq. Props.')
+                    ax[0][i].set_xticks(IndexCountsX[OrderedKeys[Counter1 + i]].index)
+                    ax[0][i].set_xticklabels([f'{b:.2f}' for b in IndexCountsX[OrderedKeys[Counter1 + i]].index], rotation=45, fontsize=7)
+                    
                     
                         ## switch from x on first row to Y on bottom row
-                    n, bins, patches = ax[1][i].hist(ListDfDict[OrderedKeys[Counter1 + i]]['Y Resid.'].iloc[DictionaryHzToTimeRange[OrderedKeys[Counter1 + i]][0]:DictionaryHzToTimeRange[OrderedKeys[Counter1 + i]][1]], bins = 'fd', color = 'steelblue', edgecolor = 'red', lw = 0.4, rwidth = 1.0)
-                    ax[1][i].set_xlabel(f'Y #{len(n)} Bins')
-                    ax[1][i].set_ylabel('Y Frequency')
-                    ax[1][i].set_xticks(bins)
-                    ax[1][i].set_xticklabels([f'{b:.2f}' for b in bins], rotation=45, fontsize=3)
-                    for count, patch in zip(n, patches):
-                        x = (patch.get_x() + patch.get_width()) / 2  # center of bar
-                        y = patch.get_height()/2                      # top of bar
-                        ax[1][i].text(x, y, str(int(count)), ha='center', va='center', fontsize=3)
+                    bars = ax[1][i].bar(IndexCountsY[OrderedKeys[Counter1 + i]].index, IndexCountsY[OrderedKeys[Counter1 + i]].values, color = 'steelblue', edgecolor = 'red', lw = 0.4, width = 0.01)
+                    ax[1][i].set_xlabel(f'Y Residual Values')
+                    ax[1][i].set_ylabel('Y Freq. Props.')
+                    ax[1][i].set_xticks(IndexCountsY[OrderedKeys[Counter1 + i]].index)
+                    ax[1][i].set_xticklabels([f'{b:.2f}' for b in IndexCountsY[OrderedKeys[Counter1 + i]].index], rotation=45, fontsize=7)
+
                 
                         # Grid settings
                     ax[1][i].grid(True, alpha = 0.3)
@@ -505,27 +522,20 @@ def __main__():
         if(int(RemainderGraphs) > 0):
             fig, ax = plt.subplots(nrows = 2, ncols = int(RemainderGraphs), figsize = (11,8.5))
             for i in range(int(RemainderGraphs)):
-                n, bins, patches = ax[0][i].hist(ListDfDict[OrderedKeys[Counter1 + i]]['X Resid.'].iloc[DictionaryHzToTimeRange[OrderedKeys[Counter1 + i]][0]:DictionaryHzToTimeRange[OrderedKeys[Counter1 + i]][1]], bins = 'fd', color = 'steelblue', edgecolor = 'red', lw = 0.4, rwidth = 1.0)
+                bars = ax[0][i].bar(IndexCountsX[OrderedKeys[Counter1 + i]].index, IndexCountsX[OrderedKeys[Counter1 + i]].values, color = 'steelblue', edgecolor = 'red', lw = 0.4, width = 0.01)
                 ax[0][i].set_title(f'{OrderedKeys[Counter1 + i]} Hz')
-                ax[0][i].set_xlabel(f'X #{len(n)} Bins')
-                ax[0][i].set_ylabel('X Frequency')
-                ax[0][i].set_xticks(bins)
-                ax[0][i].set_xticklabels([f'{b:.2f}' for b in bins], rotation=45, fontsize=3)
-                for count, patch in zip(n, patches):
-                    x = (patch.get_x() + patch.get_width()) / 2  # center of bar
-                    y = patch.get_height()/2                      # top of bar
-                    ax[0][i].text(x, y, str(int(count)), ha='center', va='center', fontsize=3)
+                ax[0][i].set_xlabel(f'X Residual Values')
+                ax[0][i].set_ylabel('X Freq. Props.')
+                ax[0][i].set_xticks(IndexCountsX[OrderedKeys[Counter1 + i]].index)
+                ax[0][i].set_xticklabels([f'{b:.2f}' for b in IndexCountsX[OrderedKeys[Counter1 + i]].index], rotation=45, fontsize=7)
+                
                     
                         ## switch from x on first row to Y on bottom row
-                n, bins, patches = ax[1][i].hist(ListDfDict[OrderedKeys[Counter1 + i]]['Y Resid.'].iloc[DictionaryHzToTimeRange[OrderedKeys[Counter1 + i]][0]:DictionaryHzToTimeRange[OrderedKeys[Counter1 + i]][1]], bins = 'fd', color = 'steelblue', edgecolor = 'red', lw = 0.4, rwidth = 1.0)
-                ax[1][i].set_xlabel(f'Y #{len(n)} Bins')
-                ax[1][i].set_ylabel('Y Frequency')
-                ax[1][i].set_xticks(bins)
-                ax[1][i].set_xticklabels([f'{b:.2f}' for b in bins], rotation=45, fontsize=3)
-                for count, patch in zip(n, patches):
-                    x = (patch.get_x() + patch.get_width()) / 2  # center of bar
-                    y = patch.get_height()/2                      # top of bar
-                    ax[1][i].text(x, y, str(int(count)), ha='center', va='center', fontsize=3)
+                bars = ax[1][i].bar(IndexCountsY[OrderedKeys[Counter1 + i]].index, IndexCountsY[OrderedKeys[Counter1 + i]].values, color = 'steelblue', edgecolor = 'red', lw = 0.4, width = 0.01)
+                ax[1][i].set_xlabel(f'Y Residual Values')
+                ax[1][i].set_ylabel('Y Freq. Props.')
+                ax[1][i].set_xticks(IndexCountsY[OrderedKeys[Counter1 + i]].index)
+                ax[1][i].set_xticklabels([f'{b:.2f}' for b in IndexCountsY[OrderedKeys[Counter1 + i]].index], rotation=45, fontsize=7)
                 
                         # Grid settings
                 ax[1][i].grid(True, alpha = 0.3)
@@ -537,21 +547,37 @@ def __main__():
             plt.close(fig)
         print(f'Percentile Bins error file succesfully written')
             
-            
+  
     with open(f'OutputReports/{OfficialNow}-{InputSelection}/{OfficialNow}-{InputSelection}_PercentileError.info', 'w') as file:
         file.write(f'Chosen true X position in meters: {GlobalX}\n')
         file.write(f'Chosen true Y position in meters: {GlobalY}\n')
         file.write(f'files analyzed {" ".join(csvs)}\n')
         file.write(f'Frequencies in impact Hz: {" ".join([str(strings) for strings in OrderedKeys])}\n')
         file.write(f'{Counter1} graphs and {PageCounter1 - 1} pages succesfully written')
-        file.write(f'\n\n Basic Statistical Repor by Hz, please reference _Error file for proper error measurements.\n\n')
-        file.write(f'Mean Report with time ranges accounted for:\n')
+        file.write(f'\n\n Basic % Frequency Report, please reference _Error file for proper error measurements.\n\n')
+        file.write("----------------------------------------------------------------\n")
+        file.write(f'Binned Error Proportion values by Hz:\n')
         for element in OrderedKeys:
-            file.write(f'{element} Hz: X wise - {ListDfDict[element]['']}\n')
+            file.write("----------------------------------------------------------------\n")
+            file.write(f'{element} Hz --> \n')
+            file.write(f'X Residual % Proportions:\n')
+            for i in IndexCountsX[element].index:
+                file.write(f'{i:.2f} --- {((IndexCountsX[element][i])*100):.1f}%\n')
+            file.write("---------\n")
+            file.write(f'Y Residual % Proportions:\n')
+            for i in IndexCountsY[element].index:
+                file.write(f'{i:.2f} --- {((IndexCountsY[element][i])*100):.1f}%\n')
+        file.write("\n")
+        file.write("----------------------------------------------------------------")
+        file.write("\n")
+        
+        
+        file.write("End of Report")
         
         
         
     print('Percentile Error report succesfully written')
+
         
     
     
