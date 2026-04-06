@@ -57,7 +57,7 @@ def __main__():
     print(csvs)
     
     for files in csvs:
-        df = pd.read_csv(f'{InputSelection}/{InputSelection}_Translated_To_CSV/{files}')
+        df = pd.read_csv(f'{InputSelection}/{InputSelection}_Translated_To_CSV/{files}', dtype = {'#Time': float}, float_precision = 'round_trip') # round trip ensures that we whenwe convert the float back to the a string, we get the string back - so it imagines my values to be strings, turns it into a float, and then turns it back into a string to check if it matches the og string
         ListDfDict[int(files[files.index("_")+1:re.search(r'Hz', files).start()])] = df
     print("Data Frames Created")
     #print(ListDfDict[0]["#Time"]) dtype is float64 
@@ -85,12 +85,30 @@ def __main__():
     if(len(str(GlobalY).split(".")[1]) > 2):
         GlobalY = round(GlobalY, 2)
             
+            
+    print("\n")
+    
+     
     print("\n")
     print("You will now select time ranges for plots. By default graphs will keep their usual time record if you do not specify a range for a graph.\n A query loop will follow allowing you to edit different plots.")
+    StringTimeRanges = {}
+    for element in OrderedKeys:
+        StringTimeRanges[element] = [ListDfDict[element]["#Time"].iloc[0], ListDfDict[element]["#Time"].iloc[-1]]
+        print(f'{element} - Start: {StringTimeRanges[element][0]:.3f} & End: {StringTimeRanges[element][1]:.3f}')
+            
+    CommonStartTimeIndex = max(StringTimeRanges, key = lambda k: StringTimeRanges[k][0])
+    CommonEndTimeIndex = min(StringTimeRanges, key = lambda k: StringTimeRanges[k][1])
+    ValueStartTime = StringTimeRanges[CommonStartTimeIndex][0]
+    ValueEndTime = StringTimeRanges[CommonEndTimeIndex][1]
+    Gap = ValueEndTime - ValueStartTime
+            
+            
+    print(f'Common Start Time: {ValueStartTime:.3f}, Common End Time: {ValueEndTime:.3f}, Difference Time Gap: {Gap:.3f}')
     while(True):
         GraphsInput = str(input("Please specify hz plots you would like to edit timeranges by Hz in the form example of '3,9,11,60,120'. \nOr, press empty enter for default. You will have the option to edit different plots at a time: "))
         if(GraphsInput.lower() == ""):
             break
+        
             
         try:
             reObject = re.split(r'\s*,\s*', GraphsInput)
@@ -104,6 +122,8 @@ def __main__():
             raise ValueError("Unable to parse the Hz inputs, please try again.")
        
         try:
+            
+            
             TimeNot = round(float(input("For these plots, please enter the beginning time you would like to plot for (ex = 30.290):")), 3)
             print(f'Entered initial time: {TimeNot}')
             TimeFinal = round(float(input("Please enter the final time you would like to plot for (ex = 30.290):")), 3)
@@ -112,7 +132,10 @@ def __main__():
                 raise ValueError(f'Bad bound selection of Not {TimeNot} and {TimeFinal} timenot selection must be strictly less than time final final.')
             print(f'Range of {str(TimeFinal - TimeNot)}')
             
+            
+            
             for elem in reObject:
+                ListDfDict[elem]["Str(TIME)"] = ListDfDict[elem]["#Time"].map(lambda x: f'{x:.3f}')
                 BeginningIndex = ListDfDict[elem]["#Time"].searchsorted(TimeNot, side = "left")
                 LastIndex =  ListDfDict[elem]["#Time"].searchsorted(TimeFinal, side = "right") # one to the right, so if value is at index 554, 555 is the side = right cuz you want to use that value
                 if (LastIndex > len(ListDfDict[elem]["#Time"]) or BeginningIndex >= len(ListDfDict[elem]["#Time"])):
@@ -155,7 +178,7 @@ def __main__():
         
         if(int(FullNumPages) > 0):
             for pagenum in range(0,int(FullNumPages)):
-                fig, ax = plt.subplots(nrows = 2, ncols = 2, figsize = (11,8.5))
+                fig, ax = plt.subplots(nrows = 2, ncols = 2, figsize = (11,8.5), squeeze=False)
                 for i in range(0, 2):
                     ax[0][i].plot(ListDfDict[OrderedKeys[Counter + i]]['#Time'].iloc[DictionaryHzToTimeRange[OrderedKeys[Counter + i]][0]:DictionaryHzToTimeRange[OrderedKeys[Counter + i]][1]],ListDfDict[OrderedKeys[Counter + i]]['X'].iloc[DictionaryHzToTimeRange[OrderedKeys[Counter + i]][0]:DictionaryHzToTimeRange[OrderedKeys[Counter + i]][1]], color = 'blue')
                     ax[0][i].set_title(f'{OrderedKeys[Counter + i]} Hz')
@@ -176,7 +199,7 @@ def __main__():
                 file.savefig(fig)
                 plt.close(fig)
         if(int(RemainderGraphs) > 0):
-            fig, ax = plt.subplots(nrows = 2, ncols = int(RemainderGraphs), figsize = (11,8.5))
+            fig, ax = plt.subplots(nrows = 2, ncols = int(RemainderGraphs), figsize = (11,8.5), squeeze = False)
             for i in range(int(RemainderGraphs)):
                 ax[0][i].plot(ListDfDict[OrderedKeys[Counter + i]]['#Time'].iloc[DictionaryHzToTimeRange[OrderedKeys[Counter + i]][0]:DictionaryHzToTimeRange[OrderedKeys[Counter + i]][1]],ListDfDict[OrderedKeys[Counter + i]]['X'].iloc[DictionaryHzToTimeRange[OrderedKeys[Counter + i]][0]:DictionaryHzToTimeRange[OrderedKeys[Counter + i]][1]], color = 'blue')
                 ax[0][i].set_title(f'{OrderedKeys[Counter + i]} Hz')
@@ -325,7 +348,7 @@ def __main__():
         
         if(int(FullNumPages) > 0):
             for pagenum in range(0,int(FullNumPages)):
-                fig, ax = plt.subplots(nrows = 2, ncols = 2, figsize = (11,8.5))
+                fig, ax = plt.subplots(nrows = 2, ncols = 2, figsize = (11,8.5), squeeze = False)
                 for i in range(0, 2):
                     ax[0][i].plot(ListDfDict[OrderedKeys[Counter1 + i]]['#Time'].iloc[DictionaryHzToTimeRange[OrderedKeys[Counter1 + i]][0]:DictionaryHzToTimeRange[OrderedKeys[Counter1 + i]][1]],ListDfDict[OrderedKeys[Counter1 + i]]['X Resid.'].iloc[DictionaryHzToTimeRange[OrderedKeys[Counter1 + i]][0]:DictionaryHzToTimeRange[OrderedKeys[Counter1 + i]][1]], color = 'blue')
                     ax[0][i].set_title(f'{OrderedKeys[Counter1 + i]} Hz')
@@ -346,7 +369,7 @@ def __main__():
                 file.savefig(fig)
                 plt.close(fig)
         if(int(RemainderGraphs) > 0):
-            fig, ax = plt.subplots(nrows = 2, ncols = int(RemainderGraphs), figsize = (11,8.5))
+            fig, ax = plt.subplots(nrows = 2, ncols = int(RemainderGraphs), figsize = (11,8.5), squeeze=False)
             for i in range(int(RemainderGraphs)):
                 ax[0][i].plot(ListDfDict[OrderedKeys[Counter1 + i]]['#Time'].iloc[DictionaryHzToTimeRange[OrderedKeys[Counter1 + i]][0]:DictionaryHzToTimeRange[OrderedKeys[Counter1 + i]][1]],ListDfDict[OrderedKeys[Counter1 + i]]['X Resid.'].iloc[DictionaryHzToTimeRange[OrderedKeys[Counter1 + i]][0]:DictionaryHzToTimeRange[OrderedKeys[Counter1 + i]][1]], color = 'blue')
                 ax[0][i].set_title(f'{OrderedKeys[Counter1 + i]} Hz')
@@ -493,7 +516,7 @@ def __main__():
         
         if(int(FullNumPages) > 0):
             for pagenum in range(0,int(FullNumPages)):
-                fig, ax = plt.subplots(nrows = 2, ncols = 2, figsize = (11,8.5))
+                fig, ax = plt.subplots(nrows = 2, ncols = 2, figsize = (11,8.5),squeeze=False)
                 for i in range(0, 2):
                     bars = ax[0][i].bar(IndexCountsX[OrderedKeys[Counter1 + i]].index, IndexCountsX[OrderedKeys[Counter1 + i]].values, color = 'steelblue', edgecolor = 'red', lw = 0.4, width = 0.01)
                     ax[0][i].set_title(f'{OrderedKeys[Counter1 + i]} Hz')
@@ -520,7 +543,7 @@ def __main__():
                 file.savefig(fig)
                 plt.close(fig)
         if(int(RemainderGraphs) > 0):
-            fig, ax = plt.subplots(nrows = 2, ncols = int(RemainderGraphs), figsize = (11,8.5))
+            fig, ax = plt.subplots(nrows = 2, ncols = int(RemainderGraphs), figsize = (11,8.5),squeeze=False)
             for i in range(int(RemainderGraphs)):
                 bars = ax[0][i].bar(IndexCountsX[OrderedKeys[Counter1 + i]].index, IndexCountsX[OrderedKeys[Counter1 + i]].values, color = 'steelblue', edgecolor = 'red', lw = 0.4, width = 0.01)
                 ax[0][i].set_title(f'{OrderedKeys[Counter1 + i]} Hz')

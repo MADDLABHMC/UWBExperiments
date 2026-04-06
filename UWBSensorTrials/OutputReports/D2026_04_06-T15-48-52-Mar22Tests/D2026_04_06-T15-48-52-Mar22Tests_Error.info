@@ -1,0 +1,171 @@
+Chosen true X position in meters: 2.06
+Chosen true Y position in meters: 2.06
+files analyzed Mar22_0Hz.csv Mar22_6Hz.csv Mar22_9Hz.csv Mar22_15Hz.csv Mar22_20Hz.csv Mar22_25Hz.csv Mar22_35Hz.csv Mar22_45Hz.csv Mar22_60Hz.csv Mar22_75Hz.csv Mar22_94Hz.csv
+Frequencies in impact Hz: 0 6 9 15 20 25 35 45 60 75 94
+11 graphs and 6 pages succesfully written
+Calculations are written with time bounds selected by users.
+
+
+----------------------------------------------------------------
+RMSE Report by Hz:
+0 Hz: X component - 0.043, Y component - 0.113, 2D RMSE - 0.121 
+
+6 Hz: X component - 0.055, Y component - 0.089, 2D RMSE - 0.104 
+
+9 Hz: X component - 0.047, Y component - 0.101, 2D RMSE - 0.111 
+
+15 Hz: X component - 0.051, Y component - 0.092, 2D RMSE - 0.105 
+
+20 Hz: X component - 0.051, Y component - 0.095, 2D RMSE - 0.108 
+
+25 Hz: X component - 0.052, Y component - 0.101, 2D RMSE - 0.114 
+
+35 Hz: X component - 0.047, Y component - 0.112, 2D RMSE - 0.121 
+
+45 Hz: X component - 0.04, Y component - 0.119, 2D RMSE - 0.125 
+
+60 Hz: X component - 0.042, Y component - 0.112, 2D RMSE - 0.119 
+
+75 Hz: X component - 0.045, Y component - 0.118, 2D RMSE - 0.126 
+
+94 Hz: X component - 0.041, Y component - 0.124, 2D RMSE - 0.13 
+
+
+----------------------------------------------------------------
+ME bias report by Hz:
+0 Hz: X component - -0.003, Y component - 0.108, Total 2D ME Bias (Magnitude func.) - 0.108 
+
+6 Hz: X component - -0.006, Y component - 0.075, Total 2D ME Bias (Magnitude func.) - 0.075 
+
+9 Hz: X component - -0.013, Y component - 0.092, Total 2D ME Bias (Magnitude func.) - 0.093 
+
+15 Hz: X component - -0.006, Y component - 0.08, Total 2D ME Bias (Magnitude func.) - 0.08 
+
+20 Hz: X component - -0.023, Y component - 0.082, Total 2D ME Bias (Magnitude func.) - 0.085 
+
+25 Hz: X component - -0.012, Y component - 0.092, Total 2D ME Bias (Magnitude func.) - 0.093 
+
+35 Hz: X component - -0.013, Y component - 0.106, Total 2D ME Bias (Magnitude func.) - 0.107 
+
+45 Hz: X component - 0.0, Y component - 0.114, Total 2D ME Bias (Magnitude func.) - 0.114 
+
+60 Hz: X component - -0.007, Y component - 0.106, Total 2D ME Bias (Magnitude func.) - 0.106 
+
+75 Hz: X component - -0.012, Y component - 0.112, Total 2D ME Bias (Magnitude func.) - 0.113 
+
+94 Hz: X component - 0.005, Y component - 0.119, Total 2D ME Bias (Magnitude func.) - 0.119 
+
+
+----------------------------------------------------------------
+MAE report by Hz:
+0 Hz: X component - 0.036, Y component - 0.108, Total 2D MAE Error (averaged sum of euclidean distance error) - 0.117 
+
+6 Hz: X component - 0.046, Y component - 0.079, Total 2D MAE Error (averaged sum of euclidean distance error) - 0.099 
+
+9 Hz: X component - 0.039, Y component - 0.094, Total 2D MAE Error (averaged sum of euclidean distance error) - 0.107 
+
+15 Hz: X component - 0.042, Y component - 0.084, Total 2D MAE Error (averaged sum of euclidean distance error) - 0.101 
+
+20 Hz: X component - 0.043, Y component - 0.085, Total 2D MAE Error (averaged sum of euclidean distance error) - 0.102 
+
+25 Hz: X component - 0.044, Y component - 0.094, Total 2D MAE Error (averaged sum of euclidean distance error) - 0.109 
+
+35 Hz: X component - 0.039, Y component - 0.106, Total 2D MAE Error (averaged sum of euclidean distance error) - 0.118 
+
+45 Hz: X component - 0.033, Y component - 0.114, Total 2D MAE Error (averaged sum of euclidean distance error) - 0.122 
+
+60 Hz: X component - 0.035, Y component - 0.106, Total 2D MAE Error (averaged sum of euclidean distance error) - 0.116 
+
+75 Hz: X component - 0.037, Y component - 0.112, Total 2D MAE Error (averaged sum of euclidean distance error) - 0.123 
+
+94 Hz: X component - 0.034, Y component - 0.119, Total 2D MAE Error (averaged sum of euclidean distance error) - 0.127 
+
+
+----------------------------------------------------------------
+Max Residual Error report by Hz in user specified time range:
+0 Hz: Max X error component --> Access Index - 346, X Time log - 81.16, Resid. Value - -0.11 | Max Y error component --> Access Index - 800, Y Time log - 126.65, Resid. Value - 0.2|
+0 Hz Continued: Max Euclidean error --> Access Index - 800, Time log - 126.65, Max Euclidean error - 0.209, X comp - -0.06, Y comp - 0.2
+
+6 Hz: Max X error component --> Access Index - 660, X Time log - 98.43, Resid. Value - 0.15 | Max Y error component --> Access Index - 765, Y Time log - 108.95, Resid. Value - 0.18|
+6 Hz Continued: Max Euclidean error --> Access Index - 1003, Time log - 132.8, Max Euclidean error - 0.184, X comp - -0.07, Y comp - 0.17
+
+9 Hz: Max X error component --> Access Index - 342, X Time log - 65.28, Resid. Value - -0.15 | Max Y error component --> Access Index - 1303, Y Time log - 161.58, Resid. Value - 0.19|
+9 Hz Continued: Max Euclidean error --> Access Index - 1303, Time log - 161.58, Max Euclidean error - 0.19, X comp - -0.01, Y comp - 0.19
+
+15 Hz: Max X error component --> Access Index - 311, X Time log - 59.34, Resid. Value - 0.13 | Max Y error component --> Access Index - 525, Y Time log - 80.78, Resid. Value - 0.18|
+15 Hz Continued: Max Euclidean error --> Access Index - 525, Time log - 80.78, Max Euclidean error - 0.184, X comp - -0.04, Y comp - 0.18
+
+20 Hz: Max X error component --> Access Index - 274, X Time log - 59.68, Resid. Value - 0.14 | Max Y error component --> Access Index - 292, Y Time log - 61.48, Resid. Value - 0.18|
+20 Hz Continued: Max Euclidean error --> Access Index - 752, Time log - 107.57, Max Euclidean error - 0.19, X comp - -0.06, Y comp - 0.18
+
+25 Hz: Max X error component --> Access Index - 745, X Time log - 104.7, Resid. Value - 0.13 | Max Y error component --> Access Index - 216, Y Time log - 51.69, Resid. Value - 0.2|
+25 Hz Continued: Max Euclidean error --> Access Index - 216, Time log - 51.69, Max Euclidean error - 0.212, X comp - -0.07, Y comp - 0.2
+
+35 Hz: Max X error component --> Access Index - 1391, X Time log - 165.7, Resid. Value - 0.13 | Max Y error component --> Access Index - 690, Y Time log - 95.46, Resid. Value - 0.2|
+35 Hz Continued: Max Euclidean error --> Access Index - 1305, Time log - 157.08, Max Euclidean error - 0.212, X comp - -0.07, Y comp - 0.2
+
+45 Hz: Max X error component --> Access Index - 363, X Time log - 67.1, Resid. Value - 0.11 | Max Y error component --> Access Index - 754, Y Time log - 106.28, Resid. Value - 0.19|
+45 Hz Continued: Max Euclidean error --> Access Index - 1066, Time log - 137.54, Max Euclidean error - 0.199, X comp - -0.06, Y comp - 0.19
+
+60 Hz: Max X error component --> Access Index - 677, X Time log - 91.79, Resid. Value - -0.12 | Max Y error component --> Access Index - 279, Y Time log - 51.91, Resid. Value - 0.19|
+60 Hz Continued: Max Euclidean error --> Access Index - 279, Time log - 51.91, Max Euclidean error - 0.191, X comp - 0.02, Y comp - 0.19
+
+75 Hz: Max X error component --> Access Index - 508, X Time log - 79.87, Resid. Value - 0.14 | Max Y error component --> Access Index - 781, Y Time log - 107.23, Resid. Value - 0.2|
+75 Hz Continued: Max Euclidean error --> Access Index - 782, Time log - 107.33, Max Euclidean error - 0.202, X comp - -0.03, Y comp - 0.2
+
+94 Hz: Max X error component --> Access Index - 929, X Time log - 121.35, Resid. Value - 0.15 | Max Y error component --> Access Index - 1402, Y Time log - 168.75, Resid. Value - 0.21|
+94 Hz Continued: Max Euclidean error --> Access Index - 1402, Time log - 168.75, Max Euclidean error - 0.211, X comp - -0.02, Y comp - 0.21
+
+
+----------------------------------------------------------------
+Initial Point Error report by Hz:
+0 Hz: Access Index - 0, Time log - 46.49, X Resid. Value - -0.04, Y Resid. Value - 0.16, 2D initial recorded Euclidean distance error - 0.165
+
+6 Hz: Access Index - 142, Time log - 46.52, X Resid. Value - -0.05, Y Resid. Value - 0.11, 2D initial recorded Euclidean distance error - 0.121
+
+9 Hz: Access Index - 155, Time log - 46.55, X Resid. Value - 0.01, Y Resid. Value - 0.11, 2D initial recorded Euclidean distance error - 0.11
+
+15 Hz: Access Index - 183, Time log - 46.51, X Resid. Value - 0.03, Y Resid. Value - 0.07, 2D initial recorded Euclidean distance error - 0.076
+
+20 Hz: Access Index - 143, Time log - 46.56, X Resid. Value - -0.04, Y Resid. Value - 0.13, 2D initial recorded Euclidean distance error - 0.136
+
+25 Hz: Access Index - 165, Time log - 46.58, X Resid. Value - -0.05, Y Resid. Value - 0.12, 2D initial recorded Euclidean distance error - 0.13
+
+35 Hz: Access Index - 202, Time log - 46.56, X Resid. Value - -0.07, Y Resid. Value - 0.11, 2D initial recorded Euclidean distance error - 0.13
+
+45 Hz: Access Index - 158, Time log - 46.56, X Resid. Value - -0.01, Y Resid. Value - 0.11, 2D initial recorded Euclidean distance error - 0.11
+
+60 Hz: Access Index - 225, Time log - 46.5, X Resid. Value - 0.03, Y Resid. Value - 0.14, 2D initial recorded Euclidean distance error - 0.143
+
+75 Hz: Access Index - 175, Time log - 46.51, X Resid. Value - -0.02, Y Resid. Value - 0.18, 2D initial recorded Euclidean distance error - 0.181
+
+94 Hz: Access Index - 182, Time log - 46.5, X Resid. Value - 0.04, Y Resid. Value - 0.17, 2D initial recorded Euclidean distance error - 0.175
+
+
+----------------------------------------------------------------
+Final Point Error report by Hz:
+0 Hz: Access Index - 1383, Time Log - 185.07, X component residual - 0.04, Y component residual - 0.11, 2D final recorded euclidean error - 0.117
+
+6 Hz: Access Index - 1524, Time Log - 185.0, X component residual - -0.04, Y component residual - 0.03, 2D final recorded euclidean error - 0.05
+
+9 Hz: Access Index - 1537, Time Log - 185.02, X component residual - 0.05, Y component residual - 0.11, 2D final recorded euclidean error - 0.121
+
+15 Hz: Access Index - 1566, Time Log - 185.09, X component residual - 0.02, Y component residual - 0.15, 2D final recorded euclidean error - 0.151
+
+20 Hz: Access Index - 1525, Time Log - 185.03, X component residual - -0.13, Y component residual - -0.01, 2D final recorded euclidean error - 0.13
+
+25 Hz: Access Index - 1547, Time Log - 185.06, X component residual - -0.02, Y component residual - 0.13, 2D final recorded euclidean error - 0.132
+
+35 Hz: Access Index - 1584, Time Log - 185.04, X component residual - -0.03, Y component residual - 0.09, 2D final recorded euclidean error - 0.095
+
+45 Hz: Access Index - 1540, Time Log - 185.03, X component residual - 0.04, Y component residual - 0.14, 2D final recorded euclidean error - 0.146
+
+60 Hz: Access Index - 1608, Time Log - 185.07, X component residual - 0.01, Y component residual - 0.12, 2D final recorded euclidean error - 0.12
+
+75 Hz: Access Index - 1558, Time Log - 185.08, X component residual - -0.04, Y component residual - 0.11, 2D final recorded euclidean error - 0.117
+
+94 Hz: Access Index - 1565, Time Log - 185.08, X component residual - -0.04, Y component residual - 0.1, 2D final recorded euclidean error - 0.108
+
+
+----------------------------------------------------------------
+End of Report

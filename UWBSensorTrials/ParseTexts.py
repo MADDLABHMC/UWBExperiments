@@ -34,7 +34,7 @@ def __main__():
         raise Exception("You already have a Translated Folder, please figure out the situation.")
     file_names = [x for x in file_names if (".txt" in x.lower()) and ("note" not in x.lower())]
     print(file_names)
-    os.mkdirs(f'{FOLDERINPUT}/{FOLDERINPUT}_Translated_To_CSV', mode = 0o755, exist_ok = False)
+    os.makedirs(f'{FOLDERINPUT}/{FOLDERINPUT}_Translated_To_CSV', mode = 0o755, exist_ok = False)
     print("Directory properly created.")
     for FILENAME in file_names:
         with open(f'{FOLDERINPUT}/{FILENAME}', 'r') as file:
