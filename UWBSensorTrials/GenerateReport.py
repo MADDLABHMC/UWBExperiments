@@ -224,6 +224,11 @@ def __main__():
       
     print(f'Succesful pdf Write of {PageCounter-1} pages and {Counter} graphs.')
     
+    
+    
+    
+    
+    
     ##Error graphs next
     
     # Need to make properedicts to each Dataframe to provide what's necessary
@@ -241,6 +246,18 @@ def __main__():
     FinalRE = {}
     
     InitialRE = {}
+    
+    MEAdjustedAve = {}
+    
+    MEAdjRMSE = {}
+    MEAdjMAE = {}
+    MEAdjMaxRE = {}
+    #Following are not deemed relavent statistics as lots of oscillation won't allow for a valid comparisonsince we go up and down.
+    #MEAdjInitialRE = {}
+    #MEAdjFinalRE = {}
+    
+    #Consider a minumum statistic?
+    
     
     ### Error calculations
     for element in OrderedKeys:
@@ -263,8 +280,8 @@ def __main__():
         #YAbsMaxErrorValue = ListDfDict[element]['Y Resid. abs'].iloc[DictionaryHzToTimeRange[element][0]:DictionaryHzToTimeRange[element][1]].max()
         
         
-        ListDfDict[element]['X Resid. abs sq'] = np.power(ListDfDict[element]['X Resid. abs'],2)
-        ListDfDict[element]['Y Resid. abs sq'] = np.power(ListDfDict[element]['Y Resid. abs'],2)
+        ListDfDict[element]['X Resid. abs sq'] = np.power(ListDfDict[element]['X Resid. abs'],2).round(7)
+        ListDfDict[element]['Y Resid. abs sq'] = np.power(ListDfDict[element]['Y Resid. abs'],2).round(7)
         
         
         #ME section at this point
@@ -334,11 +351,123 @@ def __main__():
         ME[element] = [XME, YME, MAGME]
         MAE[element] = [XMAE, YMAE, TDMAE]
         
+        # organized by x, y
+        ############# INSERT SECTION FOR UPDATE BASED OFF OF ME. 
+        MEAdjustedAve[element] = [round(GlobalX + ME[element][0],3), round(GlobalY + ME[element][1],3)]
+        
+        ListDfDict[element]['X Resid. MEAdjusted'] = (ListDfDict[element]['X'] - MEAdjustedAve[element][0]).round(2)
+        ListDfDict[element]['Y Resid. MEAdjusted'] = (ListDfDict[element]['Y'] - MEAdjustedAve[element][1]).round(2)
+        
+        ListDfDict[element]['X Resid. MEAdj abs'] = (ListDfDict[element]['X Resid. MEAdjusted'].abs()).round(2)
+        ListDfDict[element]['Y Resid. MEAdj abs'] = (ListDfDict[element]['Y Resid. MEAdjusted'].abs()).round(2)
         
         
         
         
         
+        ## ROund two of adjusted report essentially, ME ADJ
+        
+        ListDfDict[element]['X Resid. MEAdj abs sq'] = np.power(ListDfDict[element]['X Resid. MEAdj abs'],2).round(7)
+        ListDfDict[element]['Y Resid. MEAdj abs sq'] = np.power(ListDfDict[element]['Y Resid. MEAdj abs'],2).round(7)
+        
+        MEADJXMAE = round((ListDfDict[element]['X Resid. MEAdj abs'].iloc[DictionaryHzToTimeRange[element][0]:DictionaryHzToTimeRange[element][1]].sum())/int(len(ListDfDict[element]['X Resid. MEAdj abs'].iloc[DictionaryHzToTimeRange[element][0]:DictionaryHzToTimeRange[element][1]])),3)
+        MEADJYMAE = round((ListDfDict[element]['Y Resid. MEAdj abs'].iloc[DictionaryHzToTimeRange[element][0]:DictionaryHzToTimeRange[element][1]].sum())/int(len(ListDfDict[element]['Y Resid. MEAdj abs'].iloc[DictionaryHzToTimeRange[element][0]:DictionaryHzToTimeRange[element][1]])),3)
+        
+        MEADJMAEMAG = round((np.sqrt(ListDfDict[element]['X Resid. MEAdj abs sq'].iloc[DictionaryHzToTimeRange[element][0]:DictionaryHzToTimeRange[element][1]] + ListDfDict[element]['Y Resid. MEAdj abs sq'].iloc[DictionaryHzToTimeRange[element][0]:DictionaryHzToTimeRange[element][1]]).sum())/int(len(ListDfDict[element]['Y Resid. MEAdj abs sq'].iloc[DictionaryHzToTimeRange[element][0]:DictionaryHzToTimeRange[element][1]])),3)
+        MEAdjMAE[element] = [MEADJXMAE, MEADJYMAE, MEADJMAEMAG]
+        
+        
+        ### Start of RMSE Portion
+        MEADJSumResidSqXTimeRAware = ListDfDict[element]['X Resid. MEAdj abs sq'].iloc[DictionaryHzToTimeRange[element][0]:DictionaryHzToTimeRange[element][1]].sum()
+        MEADJSumResidSqYTimeRAware = ListDfDict[element]['Y Resid. MEAdj abs sq'].iloc[DictionaryHzToTimeRange[element][0]:DictionaryHzToTimeRange[element][1]].sum()
+        
+        MEADJSumResidSqXAverage = MEADJSumResidSqXTimeRAware / int(len(ListDfDict[element]['X Resid. MEAdj abs sq'].iloc[DictionaryHzToTimeRange[element][0]:DictionaryHzToTimeRange[element][1]]))
+        MEADJSumResidSqYAverage = MEADJSumResidSqYTimeRAware / int(len(ListDfDict[element]['Y Resid. MEAdj abs sq'].iloc[DictionaryHzToTimeRange[element][0]:DictionaryHzToTimeRange[element][1]]))
+        
+        
+        
+        MEADJRMSEX = round(np.sqrt(MEADJSumResidSqXAverage), 3)
+        MEADJRMSEY = round(np.sqrt(MEADJSumResidSqYAverage), 3)
+        
+        MEADJTotalSumResidSq = MEADJSumResidSqXTimeRAware + MEADJSumResidSqYTimeRAware
+        MEADJTotalSumResidSqAve = MEADJTotalSumResidSq / int(len(ListDfDict[element]['X Resid. MEAdj abs sq'].iloc[DictionaryHzToTimeRange[element][0]:DictionaryHzToTimeRange[element][1]]))
+        
+        MEADJTwoDRMSE = round(np.sqrt(MEADJTotalSumResidSqAve), 3)
+        
+        MEAdjRMSE[element] = [MEADJRMSEX, MEADJRMSEY, MEADJTwoDRMSE]
+        
+        ###
+        
+        ListDfDict[element]['MEADJTotalEuclideanDistanceError'] = (np.sqrt(ListDfDict[element]['X Resid. MEAdj abs sq'] + ListDfDict[element]['Y Resid. MEAdj abs sq'])).round(3)   
+        MEAdjIndexMaxEuclideanDistanceError = ListDfDict[element]['MEADJTotalEuclideanDistanceError'].iloc[DictionaryHzToTimeRange[element][0]:DictionaryHzToTimeRange[element][1]].idxmax()
+        
+        MEAdjXAbsMaxErrorIndex = ListDfDict[element]['X Resid. MEAdj abs'].iloc[DictionaryHzToTimeRange[element][0]:DictionaryHzToTimeRange[element][1]].idxmax()
+        MEAdjYAbsMaxErrorIndex = ListDfDict[element]['Y Resid. MEAdj abs'].iloc[DictionaryHzToTimeRange[element][0]:DictionaryHzToTimeRange[element][1]].idxmax()
+        # follows X indivudually, Y indivisdually, and then given info about total euclidean error max wise, all within the correct time period
+        MEAdjMaxRE[element] = [[MEAdjXAbsMaxErrorIndex,  ListDfDict[element]['#Time'].iloc[MEAdjXAbsMaxErrorIndex] ,ListDfDict[element]['X Resid. MEAdjusted'].iloc[MEAdjXAbsMaxErrorIndex]],[MEAdjYAbsMaxErrorIndex,  ListDfDict[element]['#Time'].iloc[MEAdjYAbsMaxErrorIndex],ListDfDict[element]['Y Resid. MEAdjusted'].iloc[MEAdjYAbsMaxErrorIndex]],[MEAdjIndexMaxEuclideanDistanceError, ListDfDict[element]['MEADJTotalEuclideanDistanceError'].iloc[MEAdjIndexMaxEuclideanDistanceError],ListDfDict[element]['#Time'].iloc[MEAdjIndexMaxEuclideanDistanceError], ListDfDict[element]['X Resid. MEAdjusted'].iloc[MEAdjIndexMaxEuclideanDistanceError], ListDfDict[element]['Y Resid. MEAdjusted'].iloc[MEAdjIndexMaxEuclideanDistanceError]]]
+        
+        
+        
+        
+        
+        
+        
+          
+    Counter = 0
+    PageCounter = 1
+    
+    with pdf(f'OutputReports/{OfficialNow}-{InputSelection}/{OfficialNow}-{InputSelection}_MEADJRaw.pdf') as file:
+        plt.rcParams["figure.figsize"] = (11, 8.5)
+        
+        if(int(FullNumPages) > 0):
+            for pagenum in range(0,int(FullNumPages)):
+                fig, ax = plt.subplots(nrows = 2, ncols = 2, figsize = (11,8.5), squeeze=False)
+                for i in range(0, 2):
+                    ax[0][i].plot(ListDfDict[OrderedKeys[Counter + i]]['#Time'].iloc[DictionaryHzToTimeRange[OrderedKeys[Counter + i]][0]:DictionaryHzToTimeRange[OrderedKeys[Counter + i]][1]],ListDfDict[OrderedKeys[Counter + i]]['X'].iloc[DictionaryHzToTimeRange[OrderedKeys[Counter + i]][0]:DictionaryHzToTimeRange[OrderedKeys[Counter + i]][1]], color = 'blue')
+                    ax[0][i].set_title(f'{OrderedKeys[Counter + i]} Hz')
+                    ax[0][i].set_xlabel('Time (s)')
+                    ax[0][i].set_ylabel('X (m)')
+                    ax[0][i].plot(np.array([ListDfDict[OrderedKeys[Counter + i]]['#Time'].iloc[DictionaryHzToTimeRange[OrderedKeys[Counter + i]][0]],ListDfDict[OrderedKeys[Counter + i]]['#Time'].iloc[(DictionaryHzToTimeRange[OrderedKeys[Counter + i]][1]-1)]]),np.array([MEAdjustedAve[OrderedKeys[Counter+i]][0], MEAdjustedAve[OrderedKeys[Counter+i]][0]]),color = 'red')
+                        ## switch from x on first row to Y on bottom row
+                    ax[1][i].plot(ListDfDict[OrderedKeys[Counter + i]]['#Time'].iloc[DictionaryHzToTimeRange[OrderedKeys[Counter + i]][0]:DictionaryHzToTimeRange[OrderedKeys[Counter + i]][1]],ListDfDict[OrderedKeys[Counter + i]]['Y'].iloc[DictionaryHzToTimeRange[OrderedKeys[Counter + i]][0]:DictionaryHzToTimeRange[OrderedKeys[Counter + i]][1]], color = 'blue')
+                    ax[1][i].set_xlabel('Time (s)')
+                    ax[1][i].set_ylabel('Y (m)')
+                    ax[1][i].plot(np.array([ListDfDict[OrderedKeys[Counter + i]]['#Time'].iloc[DictionaryHzToTimeRange[OrderedKeys[Counter + i]][0]],ListDfDict[OrderedKeys[Counter + i]]['#Time'].iloc[(DictionaryHzToTimeRange[OrderedKeys[Counter + i]][1]-1)]]),np.array([MEAdjustedAve[OrderedKeys[Counter+i]][1], MEAdjustedAve[OrderedKeys[Counter+i]][1]]),color = 'red')
+                        # Grid settings
+                    ax[1][i].grid(True, alpha = 0.3)
+                    ax[0][i].grid(True, alpha = 0.3)
+                Counter += 2
+                fig.suptitle(f'Page {PageCounter}')
+                PageCounter += 1
+                file.savefig(fig)
+                plt.close(fig)
+        if(int(RemainderGraphs) > 0):
+            fig, ax = plt.subplots(nrows = 2, ncols = int(RemainderGraphs), figsize = (11,8.5), squeeze = False)
+            for i in range(int(RemainderGraphs)):
+                ax[0][i].plot(ListDfDict[OrderedKeys[Counter + i]]['#Time'].iloc[DictionaryHzToTimeRange[OrderedKeys[Counter + i]][0]:DictionaryHzToTimeRange[OrderedKeys[Counter + i]][1]],ListDfDict[OrderedKeys[Counter + i]]['X'].iloc[DictionaryHzToTimeRange[OrderedKeys[Counter + i]][0]:DictionaryHzToTimeRange[OrderedKeys[Counter + i]][1]], color = 'blue')
+                ax[0][i].set_title(f'{OrderedKeys[Counter + i]} Hz')
+                ax[0][i].set_xlabel('time (s)')
+                ax[0][i].set_ylabel('X (m)')
+                ax[0][i].plot(np.array([ListDfDict[OrderedKeys[Counter + i]]['#Time'].iloc[DictionaryHzToTimeRange[OrderedKeys[Counter + i]][0]],ListDfDict[OrderedKeys[Counter + i]]['#Time'].iloc[(DictionaryHzToTimeRange[OrderedKeys[Counter + i]][1]-1)]]),np.array([MEAdjustedAve[element][0], MEAdjustedAve[element][0]]),color = 'red')
+                        ## switch from x on first row to Y on bottom row
+                ax[1][i].plot(ListDfDict[OrderedKeys[Counter + i]]['#Time'].iloc[DictionaryHzToTimeRange[OrderedKeys[Counter + i]][0]:DictionaryHzToTimeRange[OrderedKeys[Counter + i]][1]],ListDfDict[OrderedKeys[Counter + i]]['Y'].iloc[DictionaryHzToTimeRange[OrderedKeys[Counter + i]][0]:DictionaryHzToTimeRange[OrderedKeys[Counter + i]][1]], color = 'blue')
+                ax[1][i].set_xlabel('time (s)')
+                ax[1][i].set_ylabel('Y (m)')
+                ax[1][i].plot(np.array([ListDfDict[OrderedKeys[Counter + i]]['#Time'].iloc[DictionaryHzToTimeRange[OrderedKeys[Counter + i]][0]],ListDfDict[OrderedKeys[Counter + i]]['#Time'].iloc[(DictionaryHzToTimeRange[OrderedKeys[Counter + i]][1]-1)]]),np.array([MEAdjustedAve[element][1], MEAdjustedAve[element][1]]),color = 'red')
+                
+                ax[1][i].grid(True, alpha = 0.3)
+                ax[0][i].grid(True, alpha = 0.3)
+            Counter += RemainderGraphs
+            fig.suptitle(f'Page {PageCounter}')
+            PageCounter += 1
+            file.savefig(fig)
+            plt.close(fig)  
+        
+    print("Raw ME adj plots succesfully constructed as MEADJRaw.pdf")
+        
+        
+        
+    
         
         
         
@@ -387,6 +516,58 @@ def __main__():
             PageCounter1 += 1
             file.savefig(fig)
             plt.close(fig)
+            
+    
+    Counter1 = 0
+    PageCounter = 1
+    #ME adjusted error plots
+    
+    
+    with pdf(f'OutputReports/{OfficialNow}-{InputSelection}/{OfficialNow}-{InputSelection}_MEADJError.pdf') as file:
+        plt.rcParams["figure.figsize"] = (11, 8.5)
+        if(int(FullNumPages) > 0):
+            for pagenum in range(0,int(FullNumPages)):
+                fig, ax = plt.subplots(nrows = 2, ncols = 2, figsize = (11,8.5), squeeze = False)
+                for i in range(0, 2):
+                    ax[0][i].plot(ListDfDict[OrderedKeys[Counter1 + i]]['#Time'].iloc[DictionaryHzToTimeRange[OrderedKeys[Counter1 + i]][0]:DictionaryHzToTimeRange[OrderedKeys[Counter1 + i]][1]],ListDfDict[OrderedKeys[Counter1 + i]]['X Resid. MEAdjusted'].iloc[DictionaryHzToTimeRange[OrderedKeys[Counter1 + i]][0]:DictionaryHzToTimeRange[OrderedKeys[Counter1 + i]][1]], color = 'blue')
+                    ax[0][i].set_title(f'{OrderedKeys[Counter1 + i]} Hz')
+                    ax[0][i].set_xlabel('Time (s)')
+                    ax[0][i].set_ylabel('X Resid. MEADJ (m)')
+                    
+                        ## switch from x on first row to Y on bottom row
+                    ax[1][i].plot(ListDfDict[OrderedKeys[Counter1 + i]]['#Time'].iloc[DictionaryHzToTimeRange[OrderedKeys[Counter1 + i]][0]:DictionaryHzToTimeRange[OrderedKeys[Counter1 + i]][1]],ListDfDict[OrderedKeys[Counter1 + i]]['Y Resid. MEAdjusted'].iloc[DictionaryHzToTimeRange[OrderedKeys[Counter1 + i]][0]:DictionaryHzToTimeRange[OrderedKeys[Counter1 + i]][1]], color = 'blue')
+                    ax[1][i].set_xlabel('Time (s)')
+                    ax[1][i].set_ylabel('Y Resid. MEADJH (m)')
+                
+                        # Grid settings
+                    ax[1][i].grid(True, alpha = 0.3)
+                    ax[0][i].grid(True, alpha = 0.3)
+                Counter1 += 2
+                fig.suptitle(f'Page {PageCounter1}')
+                PageCounter1 += 1
+                file.savefig(fig)
+                plt.close(fig)
+        if(int(RemainderGraphs) > 0):
+            fig, ax = plt.subplots(nrows = 2, ncols = int(RemainderGraphs), figsize = (11,8.5), squeeze=False)
+            for i in range(int(RemainderGraphs)):
+                ax[0][i].plot(ListDfDict[OrderedKeys[Counter1 + i]]['#Time'].iloc[DictionaryHzToTimeRange[OrderedKeys[Counter1 + i]][0]:DictionaryHzToTimeRange[OrderedKeys[Counter1 + i]][1]],ListDfDict[OrderedKeys[Counter1 + i]]['X Resid. MEAdjusted'].iloc[DictionaryHzToTimeRange[OrderedKeys[Counter1 + i]][0]:DictionaryHzToTimeRange[OrderedKeys[Counter1 + i]][1]], color = 'blue')
+                ax[0][i].set_title(f'{OrderedKeys[Counter1 + i]} Hz')
+                ax[0][i].set_xlabel('Time (s)')
+                ax[0][i].set_ylabel('X Resid. MEADJ (m)')
+                        ## switch from x on first row to Y on bottom row
+                ax[1][i].plot(ListDfDict[OrderedKeys[Counter1 + i]]['#Time'].iloc[DictionaryHzToTimeRange[OrderedKeys[Counter1 + i]][0]:DictionaryHzToTimeRange[OrderedKeys[Counter1 + i]][1]],ListDfDict[OrderedKeys[Counter1 + i]]['Y Resid. MEAdjusted'].iloc[DictionaryHzToTimeRange[OrderedKeys[Counter1 + i]][0]:DictionaryHzToTimeRange[OrderedKeys[Counter1 + i]][1]], color = 'blue')
+                ax[1][i].set_xlabel('Time (s)')
+                ax[1][i].set_ylabel('Y Resid. ME ADJ (m)')
+                
+                ax[1][i].grid(True, alpha = 0.3)
+                ax[0][i].grid(True, alpha = 0.3)
+            Counter1 += RemainderGraphs
+            fig.suptitle(f'Page {PageCounter1}')
+            PageCounter1 += 1
+            file.savefig(fig)
+            plt.close(fig)
+            
+    print("Succusfully constructed ME ADJUSTED base line graphs as MEADJERROR.pdf")
 
     
     with open(f'OutputReports/{OfficialNow}-{InputSelection}/{OfficialNow}-{InputSelection}_Raw.info', 'w') as file:
@@ -480,10 +661,77 @@ def __main__():
         
         file.write("End of Report")
         
+    print(f'Error Info file succesfully written')
         
+        #Error ME ADJUSTED
+    with open(f'OutputReports/{OfficialNow}-{InputSelection}/{OfficialNow}-{InputSelection}_ErrorMEADJ.info', 'w') as file:
+        file.write("NOTE! THIS REPORT IS WITH NUMBERS FOR AN ADJUSTED ME AVERAGE\n")
+        file.write(f'Chosen true X position in meters: {GlobalX}\n')
+        file.write(f'Chosen true Y position in meters: {GlobalY}\n')
+        file.write(f'files analyzed {" ".join(csvs)}\n')
+        file.write(f'Frequencies in impact Hz: {" ".join([str(strings) for strings in OrderedKeys])}\n')
+        file.write(f'{Counter1} graphs and {PageCounter1 - 1} pages succesfully written\n')
+        # at this point we want to start to add some reports file.write()
+        
+        #RMSE[element] = [RMSEX, RMSEY, TwoDRMSE] #RMSE assumes Gaussian noise, penalize outliers more heavily
+        #ME[element] = [XME, YME, TDME]
+        #MAE[element] = [XMAE, YMAE, TDMAE]
+        file.write("Calculations are written with time bounds selected by users.\n\n")
+        
+        file.write("\n")
+        file.write("----------------------------------------------------------------")
+        file.write("\n")
+        
+        file.write("ME Influenced Change report: \n")
+        for element in OrderedKeys:
+            file.write(f'{element} Hz: \n')
+            file.write(f'X ME adjustment factor: {ME[element][0]} \n')
+            file.write(f'Newly established X Baseline: {MEAdjustedAve[element][0]} \n')
+            file.write(f'Y ME adjustment factor: {ME[element][1]} \n')
+            file.write(f'Newly established Y Baseline: {MEAdjustedAve[element][1]} \n')
+        
+        file.write("\n")
+        file.write("----------------------------------------------------------------")
+        file.write("\n")
+        
+        file.write("ME ADJ RMSE Report by Hz:\n") # Outlier detection
+        for element in OrderedKeys:
+            
+            file.write(f'{element} Hz: X component - {MEAdjRMSE[element][0]}, Y component - {MEAdjRMSE[element][1]}, 2D RMSE - {MEAdjRMSE[element][2]} \n')
+            file.write("\n")
+        
+        file.write("\n")
+        file.write("----------------------------------------------------------------")
+        file.write("\n")
+        
+        file.write("MAE report by Hz:\n") #euclidean distance error
+        for element in OrderedKeys:
+            file.write(f'{element} Hz: X component - {MEAdjMAE[element][0]}, Y component - {MEAdjMAE[element][1]}, Total 2D MAE Error (averaged sum of euclidean distance error) - {MEAdjMAE[element][2]} \n')
+            file.write("\n")
+            
+        file.write("\n")
+        file.write("----------------------------------------------------------------")
+        file.write("\n")
+        file.write("Max Residual Error report by Hz in user specified time range:\n")
+        
+        #MaxRE[element] = [[XAbsMaxErrorIndex,  ListDfDict[element]['#Time'].iloc[XAbsMaxErrorIndex] ,ListDfDict[element]['X Resid.'].iloc[XAbsMaxErrorIndex]],[YAbsMaxErrorIndex,  ListDfDict[element]['#Time'].iloc[YAbsMaxErrorIndex],ListDfDict[element]['Y Resid.'].iloc[YAbsMaxErrorIndex]],[IndexMaxEuclideanDistanceError, ListDfDict[element]['TotalEuclideanDistanceError'].iloc[IndexMaxEuclideanDistanceError],ListDfDict[element]['#Time'].iloc[IndexMaxEuclideanDistanceError], ListDfDict[element]['X Resid.'].iloc[IndexMaxEuclideanDistanceError], ListDfDict[element]['Y Resid.'].iloc[IndexMaxEuclideanDistanceError]]]
+        for element in OrderedKeys:
+            file.write(f'{element} Hz: Max X error component --> Access Index - {MEAdjMaxRE[element][0][0]}, X Time log - {MEAdjMaxRE[element][0][1]}, Resid. Value - {MEAdjMaxRE[element][0][2]} | Max Y error component --> Access Index - {MEAdjMaxRE[element][1][0]}, Y Time log - {MEAdjMaxRE[element][1][1]}, Resid. Value - {MEAdjMaxRE[element][1][2]}|\n')
+            file.write(f'{element} Hz Continued: Max Euclidean error --> Access Index - {MEAdjMaxRE[element][2][0]}, Time log - {MEAdjMaxRE[element][2][2]}, Max Euclidean error - {MEAdjMaxRE[element][2][1]}, X comp - {MEAdjMaxRE[element][2][3]}, Y comp - {MEAdjMaxRE[element][2][4]}\n')
+            file.write("\n")
+        #[IndexMaxEuclideanDistanceError, ListDfDict[element]['TotalEuclideanDistanceError'].iloc[IndexMaxEuclideanDistanceError],ListDfDict[element]['#Time'].iloc[IndexMaxEuclideanDistanceError], ListDfDict[element]['X Resid.'].iloc[IndexMaxEuclideanDistanceError], ListDfDict[element]['Y Resid.'].iloc[IndexMaxEuclideanDistanceError]
+        file.write("\n")
+        file.write("----------------------------------------------------------------")
+        file.write("\n")
+        
+        
+        file.write("End of Report")
+        
+        
+    print("ME ADJUSTED Error file succesfully written!")
         
     
-    print(f'Error Info file succesfully written')
+    
         
         
     PageCounter1 = 1

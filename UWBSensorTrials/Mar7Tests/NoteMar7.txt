@@ -5,3 +5,5 @@ TrueLocationXInches = 26.5 # true location 25.5 - 26.5 100% confidence mar 7 upd
 TrueLocationYInches = 25.5 # 0.65 meters
 
 March 7th tests where Mar7_0Hz is the baseline
+
+4ft by 4 inch box? - 1.32 meters by 1.32 meters

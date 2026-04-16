@@ -1,0 +1,131 @@
+NOTE! THIS REPORT IS WITH NUMBERS FOR AN ADJUSTED ME AVERAGE
+Chosen true X position in meters: 4.57
+Chosen true Y position in meters: 4.57
+files analyzed Mar25_0Hz.csv Mar25_6Hz.csv Mar25_9Hz.csv Mar25_15Hz.csv Mar25_20Hz.csv Mar25_25Hz.csv Mar25_35Hz.csv Mar25_45Hz.csv Mar25_60Hz.csv
+Frequencies in impact Hz: 0 6 9 15 20 25 35 45 60
+9 graphs and 10 pages succesfully written
+Calculations are written with time bounds selected by users.
+
+
+----------------------------------------------------------------
+ME Influenced Change report: 
+0 Hz: 
+X ME adjustment factor: -0.07 
+Newly established X Baseline: 4.5 
+Y ME adjustment factor: -0.122 
+Newly established Y Baseline: 4.448 
+6 Hz: 
+X ME adjustment factor: -0.07 
+Newly established X Baseline: 4.5 
+Y ME adjustment factor: -0.124 
+Newly established Y Baseline: 4.446 
+9 Hz: 
+X ME adjustment factor: -0.074 
+Newly established X Baseline: 4.496 
+Y ME adjustment factor: -0.125 
+Newly established Y Baseline: 4.445 
+15 Hz: 
+X ME adjustment factor: -0.084 
+Newly established X Baseline: 4.486 
+Y ME adjustment factor: -0.136 
+Newly established Y Baseline: 4.434 
+20 Hz: 
+X ME adjustment factor: -0.093 
+Newly established X Baseline: 4.477 
+Y ME adjustment factor: -0.14 
+Newly established Y Baseline: 4.43 
+25 Hz: 
+X ME adjustment factor: -0.091 
+Newly established X Baseline: 4.479 
+Y ME adjustment factor: -0.141 
+Newly established Y Baseline: 4.429 
+35 Hz: 
+X ME adjustment factor: -0.083 
+Newly established X Baseline: 4.487 
+Y ME adjustment factor: -0.129 
+Newly established Y Baseline: 4.441 
+45 Hz: 
+X ME adjustment factor: -0.079 
+Newly established X Baseline: 4.491 
+Y ME adjustment factor: -0.129 
+Newly established Y Baseline: 4.441 
+60 Hz: 
+X ME adjustment factor: -0.083 
+Newly established X Baseline: 4.487 
+Y ME adjustment factor: -0.13 
+Newly established Y Baseline: 4.44 
+
+----------------------------------------------------------------
+ME ADJ RMSE Report by Hz:
+0 Hz: X component - 0.018, Y component - 0.018, 2D RMSE - 0.026 
+
+6 Hz: X component - 0.036, Y component - 0.036, 2D RMSE - 0.051 
+
+9 Hz: X component - 0.036, Y component - 0.036, 2D RMSE - 0.051 
+
+15 Hz: X component - 0.04, Y component - 0.041, 2D RMSE - 0.057 
+
+20 Hz: X component - 0.046, Y component - 0.045, 2D RMSE - 0.064 
+
+25 Hz: X component - 0.043, Y component - 0.042, 2D RMSE - 0.06 
+
+35 Hz: X component - 0.02, Y component - 0.019, 2D RMSE - 0.028 
+
+45 Hz: X component - 0.02, Y component - 0.019, 2D RMSE - 0.027 
+
+60 Hz: X component - 0.02, Y component - 0.019, 2D RMSE - 0.027 
+
+
+----------------------------------------------------------------
+MAE report by Hz:
+0 Hz: X component - 0.014, Y component - 0.014, Total 2D MAE Error (averaged sum of euclidean distance error) - 0.022 
+
+6 Hz: X component - 0.028, Y component - 0.028, Total 2D MAE Error (averaged sum of euclidean distance error) - 0.042 
+
+9 Hz: X component - 0.028, Y component - 0.027, Total 2D MAE Error (averaged sum of euclidean distance error) - 0.041 
+
+15 Hz: X component - 0.032, Y component - 0.033, Total 2D MAE Error (averaged sum of euclidean distance error) - 0.047 
+
+20 Hz: X component - 0.037, Y component - 0.036, Total 2D MAE Error (averaged sum of euclidean distance error) - 0.053 
+
+25 Hz: X component - 0.034, Y component - 0.034, Total 2D MAE Error (averaged sum of euclidean distance error) - 0.049 
+
+35 Hz: X component - 0.016, Y component - 0.015, Total 2D MAE Error (averaged sum of euclidean distance error) - 0.023 
+
+45 Hz: X component - 0.016, Y component - 0.015, Total 2D MAE Error (averaged sum of euclidean distance error) - 0.023 
+
+60 Hz: X component - 0.016, Y component - 0.015, Total 2D MAE Error (averaged sum of euclidean distance error) - 0.023 
+
+
+----------------------------------------------------------------
+Max Residual Error report by Hz in user specified time range:
+0 Hz: Max X error component --> Access Index - 2091, X Time log - 235.12, Resid. Value - -0.07 | Max Y error component --> Access Index - 390, Y Time log - 64.68, Resid. Value - -0.07|
+0 Hz Continued: Max Euclidean error --> Access Index - 390, Time log - 64.68, Max Euclidean error - 0.086, X comp - -0.05, Y comp - -0.07
+
+6 Hz: Max X error component --> Access Index - 2088, X Time log - 257.73, Resid. Value - -0.17 | Max Y error component --> Access Index - 2088, Y Time log - 257.73, Resid. Value - -0.18|
+6 Hz Continued: Max Euclidean error --> Access Index - 2088, Time log - 257.73, Max Euclidean error - 0.248, X comp - -0.17, Y comp - -0.18
+
+9 Hz: Max X error component --> Access Index - 2582, X Time log - 284.66, Resid. Value - -0.15 | Max Y error component --> Access Index - 1946, Y Time log - 220.93, Resid. Value - -0.16|
+9 Hz Continued: Max Euclidean error --> Access Index - 1946, Time log - 220.93, Max Euclidean error - 0.213, X comp - -0.14, Y comp - -0.16
+
+15 Hz: Max X error component --> Access Index - 493, X Time log - 96.82, Resid. Value - -0.18 | Max Y error component --> Access Index - 493, Y Time log - 96.82, Resid. Value - -0.18|
+15 Hz Continued: Max Euclidean error --> Access Index - 493, Time log - 96.82, Max Euclidean error - 0.255, X comp - -0.18, Y comp - -0.18
+
+20 Hz: Max X error component --> Access Index - 717, X Time log - 99.15, Resid. Value - -0.21 | Max Y error component --> Access Index - 717, Y Time log - 99.15, Resid. Value - -0.21|
+20 Hz Continued: Max Euclidean error --> Access Index - 717, Time log - 99.15, Max Euclidean error - 0.297, X comp - -0.21, Y comp - -0.21
+
+25 Hz: Max X error component --> Access Index - 1004, X Time log - 124.28, Resid. Value - -0.18 | Max Y error component --> Access Index - 1004, Y Time log - 124.28, Resid. Value - -0.18|
+25 Hz Continued: Max Euclidean error --> Access Index - 1004, Time log - 124.28, Max Euclidean error - 0.255, X comp - -0.18, Y comp - -0.18
+
+35 Hz: Max X error component --> Access Index - 381, X Time log - 73.02, Resid. Value - -0.06 | Max Y error component --> Access Index - 1678, Y Time log - 202.98, Resid. Value - 0.08|
+35 Hz Continued: Max Euclidean error --> Access Index - 1678, Time log - 202.98, Max Euclidean error - 0.094, X comp - 0.05, Y comp - 0.08
+
+45 Hz: Max X error component --> Access Index - 312, X Time log - 58.06, Resid. Value - 0.07 | Max Y error component --> Access Index - 312, Y Time log - 58.06, Resid. Value - 0.07|
+45 Hz Continued: Max Euclidean error --> Access Index - 312, Time log - 58.06, Max Euclidean error - 0.099, X comp - 0.07, Y comp - 0.07
+
+60 Hz: Max X error component --> Access Index - 365, X Time log - 60.2, Resid. Value - -0.06 | Max Y error component --> Access Index - 555, Y Time log - 79.23, Resid. Value - 0.06|
+60 Hz Continued: Max Euclidean error --> Access Index - 1921, Time log - 216.11, Max Euclidean error - 0.085, X comp - -0.06, Y comp - -0.06
+
+
+----------------------------------------------------------------
+End of Report
