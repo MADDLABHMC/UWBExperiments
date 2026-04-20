@@ -1,0 +1,40 @@
+Chosen true X position in meters: 2.06
+Chosen true Y position in meters: 2.06
+files analyzed CWSymmetricRotApr16_0Hz.csv
+Frequencies in impact Hz: 0
+1 graphs and 1 pages succesfully written
+
+ Basic % Frequency Report, please reference _Error file for proper error measurements.
+
+----------------------------------------------------------------
+Binned Error Proportion values by Hz:
+----------------------------------------------------------------
+0 Hz --> 
+X Residual % Proportions:
+-0.18 --- 0.0%
+-0.17 --- 1.0%
+-0.16 --- 7.8%
+-0.15 --- 22.5%
+-0.14 --- 27.5%
+-0.13 --- 23.7%
+-0.12 --- 11.2%
+-0.11 --- 4.0%
+-0.10 --- 1.2%
+-0.09 --- 0.8%
+-0.08 --- 0.1%
+-0.07 --- 0.1%
+---------
+Y Residual % Proportions:
+-0.10 --- 0.7%
+-0.09 --- 8.9%
+-0.08 --- 27.0%
+-0.07 --- 35.4%
+-0.06 --- 18.5%
+-0.05 --- 6.3%
+-0.04 --- 2.3%
+-0.03 --- 0.6%
+-0.02 --- 0.3%
+-0.01 --- 0.0%
+
+----------------------------------------------------------------
+End of Report

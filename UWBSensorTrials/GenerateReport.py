@@ -8,6 +8,7 @@ import regex as re
 from matplotlib.backends.backend_pdf import PdfPages as pdf
 from datetime import datetime
 import math
+import pyarrow
 
 
 
@@ -848,8 +849,37 @@ def __main__():
         
         
     print('Percentile Error report succesfully written')
+    
+    
+    
+    
 
+    ## to parquet for future processing in a csv file:
+    
+    if 'GenerateReportParquetsTimeSensitive' not in os.listdir():
+        os.makedirs(f'GenerateReportParquetsTimeSensitive', mode = 0o777, exist_ok = False)
+    
+    if f'GenerateReportParquetsTimeSensitive/{InputSelection}' not in os.listdir():
+        os.makedirs(f'GenerateReportParquetsTimeSensitive/{InputSelection}', mode = 0o777, exist_ok = False)
         
+    for element in OrderedKeys:
+        ListDfDict[element].to_parquet(f'GenerateReportParquetsTimeSensitive/{InputSelection}/Test_{element}Hz.parquet', index = False)
+        
+        
+    
+    print('Parquet data succesfully written under GenerateReportParquetsTimeSensitive.')
+    
+        
+    
+    
+    
+        
+    
+    
+    
+    
+    
+    
     
     
 # Problematic becuase we want max 3 on a page
@@ -870,78 +900,5 @@ def __main__():
         
         
         
-        
-    #plt.show()
-        
-        
-        
-        
     
-        
-
-#40 - 160
-#ax[0][0].plot(dfBase['#Time'], dfBase['X'])
-#ax[0][0].set_title("X 0 Hz")
-
-#ax[0][1].plot(dfSecond['#Time'], dfSecond['X'])
-#ax[0][1].set_title("X 94 Hz")
-
-#
-#ax[1][0].plot(dfBase['#Time'], dfBase['Y'])
-#ax[1][0].set_title("Y 0 Hz")
-
-
-#ax[1][1].plot(dfSecond['#Time'], dfSecond['Y'])
-#x[1][1].set_title("Y 94 Hz")
-
-
-#ax[0][3].plot(dfFourth['#Time'], dfFourth['X'])
-#ax[0][3].set_title("X Fourth")
-
-
-#ax[0][4].plot(dfFifth['#Time'], dfFifth['X'])
-#ax[0][4].set_title("X Fifth")
-
-
-# Sep Top row from bottom row
-
-#ax[1][0].plot(dfBase['#Time'], dfBase['Y'])
-#ax[1][0].set_title("Y Base")
-
-
-#ax[1][1].plot(dfSecond['#Time'], dfSecond['Y'])
-#ax[1][1].set_title("Y Second")
-
-
-#ax[1][2].plot(dfThird['#Time'], dfThird['Y'])
-#ax[1][2].set_title("Y Third")
-
-
-#ax[1][3].plot(dfFourth['#Time'], dfFourth['Y'])
-#ax[1][3].set_title("Y Fourth")
-
-
-#ax[1][4].plot(dfFifth['#Time'], dfFifth['Y'])
-#ax[1][4].set_title("Y Fifth")
-
-#TrueLocationXInches = 26.5 # true location 25.5 - 26.5 100% confidence mar 7 update
-#TrueLocationYInches = 25.5 # True locations of Mar 7 updated between 25-26 100% conf true
-
-
-#TrueLocationXMeters = round(float(TrueLocationXInches/39.37),4)
-#TrueLocationYMeters = round(float(TrueLocationYInches/39.37), 4)
-
-#for i in range(len(ListOfDataFrames)):
-    #ax[0][i].plot(np.array([0, ListOfDataFrames[i]['#Time'].iloc[-1]]), np.array([TrueLocationXMeters, TrueLocationXMeters]), color = 'red')
-    #ax[1][i].plot(np.array([0, ListOfDataFrames[i]['#Time'].iloc[-1]]), np.array([TrueLocationYMeters, TrueLocationYMeters]), color = 'red')
-    
-#ax[0][0].plot(np.array([ListOfDataFrames[0]['#Time'].iloc[0], ListOfDataFrames[0]['#Time'].iloc[-1]]), np.array([TrueLocationXMeters, TrueLocationXMeters]), color = 'red')
-#ax[0][1].plot(np.array([ListOfDataFrames[1]['#Time'].iloc[0], ListOfDataFrames[1]['#Time'].iloc[-1]]), np.array([TrueLocationXMeters, TrueLocationXMeters]), color = 'red')
-
-#x[1][0].plot(np.array([ListOfDataFrames[0]['#Time'].iloc[0], ListOfDataFrames[0]['#Time'].iloc[-1]]), np.array([TrueLocationYMeters, TrueLocationYMeters]), color = 'red')
-#ax[1][1].plot(np.array([ListOfDataFrames[1]['#Time'].iloc[0], ListOfDataFrames[1]['#Time'].iloc[-1]]), np.array([TrueLocationYMeters, TrueLocationYMeters]), color = 'red')
-
-
-#plt.show()
-
 __main__()

@@ -1,0 +1,35 @@
+NOTE! THIS REPORT IS WITH NUMBERS FOR AN ADJUSTED ME AVERAGE
+Chosen true X position in meters: 2.06
+Chosen true Y position in meters: 2.06
+files analyzed CWSymmetricRotApr16_0Hz.csv
+Frequencies in impact Hz: 0
+1 graphs and 2 pages succesfully written
+Calculations are written with time bounds selected by users.
+
+
+----------------------------------------------------------------
+ME Influenced Change report: 
+0 Hz: 
+X ME adjustment factor: -0.137 
+Newly established X Baseline: 1.923 
+Y ME adjustment factor: -0.07 
+Newly established Y Baseline: 1.99 
+
+----------------------------------------------------------------
+ME ADJ RMSE Report by Hz:
+0 Hz: X component - 0.015, Y component - 0.012, 2D RMSE - 0.019 
+
+
+----------------------------------------------------------------
+MAE report by Hz:
+0 Hz: X component - 0.011, Y component - 0.009, Total 2D MAE Error (averaged sum of euclidean distance error) - 0.016 
+
+
+----------------------------------------------------------------
+Max Residual Error report by Hz in user specified time range:
+0 Hz: Max X error component --> Access Index - 711, X Time log - 91.4, Resid. Value - 0.07 | Max Y error component --> Access Index - 1081, Y Time log - 128.47, Resid. Value - 0.06|
+0 Hz Continued: Max Euclidean error --> Access Index - 1614, Time log - 181.88, Max Euclidean error - 0.073, X comp - 0.07, Y comp - 0.02
+
+
+----------------------------------------------------------------
+End of Report

@@ -1,0 +1,41 @@
+Chosen true X position in meters: 2.06
+Chosen true Y position in meters: 2.06
+files analyzed CWSymmetricRotApr16_0Hz.csv
+Frequencies in impact Hz: 0
+1 graphs and 2 pages succesfully written
+Calculations are written with time bounds selected by users.
+
+
+----------------------------------------------------------------
+RMSE Report by Hz:
+0 Hz: X component - 0.138, Y component - 0.072, 2D RMSE - 0.156 
+
+
+----------------------------------------------------------------
+ME bias report by Hz:
+0 Hz: X component - -0.137, Y component - -0.07, Total 2D ME Bias (Magnitude func.) - 0.154 
+
+
+----------------------------------------------------------------
+MAE report by Hz:
+0 Hz: X component - 0.137, Y component - 0.07, Total 2D MAE Error (averaged sum of euclidean distance error) - 0.155 
+
+
+----------------------------------------------------------------
+Max Residual Error report by Hz in user specified time range:
+0 Hz: Max X error component --> Access Index - 739, X Time log - 94.21, Resid. Value - -0.18 | Max Y error component --> Access Index - 566, Y Time log - 76.87, Resid. Value - -0.1|
+0 Hz Continued: Max Euclidean error --> Access Index - 2804, Time log - 301.12, Max Euclidean error - 0.197, X comp - -0.17, Y comp - -0.1
+
+
+----------------------------------------------------------------
+Initial Point Error report by Hz:
+0 Hz: Access Index - 0, Time log - 20.16, X Resid. Value - -0.12, Y Resid. Value - -0.07, 2D initial recorded Euclidean distance error - 0.139
+
+
+----------------------------------------------------------------
+Final Point Error report by Hz:
+0 Hz: Access Index - 2866, Time Log - 307.33, X component residual - -0.15, Y component residual - -0.08, 2D final recorded euclidean error - 0.17
+
+
+----------------------------------------------------------------
+End of Report

@@ -1,0 +1,41 @@
+Chosen true X position in meters: 2.06
+Chosen true Y position in meters: 2.06
+files analyzed BaselineApr16_0Hz.csv
+Frequencies in impact Hz: 0
+1 graphs and 2 pages succesfully written
+Calculations are written with time bounds selected by users.
+
+
+----------------------------------------------------------------
+RMSE Report by Hz:
+0 Hz: X component - 0.067, Y component - 0.063, 2D RMSE - 0.092 
+
+
+----------------------------------------------------------------
+ME bias report by Hz:
+0 Hz: X component - -0.056, Y component - 0.021, Total 2D ME Bias (Magnitude func.) - 0.06 
+
+
+----------------------------------------------------------------
+MAE report by Hz:
+0 Hz: X component - 0.058, Y component - 0.053, Total 2D MAE Error (averaged sum of euclidean distance error) - 0.087 
+
+
+----------------------------------------------------------------
+Max Residual Error report by Hz in user specified time range:
+0 Hz: Max X error component --> Access Index - 2224, X Time log - 261.94, Resid. Value - -0.25 | Max Y error component --> Access Index - 983, Y Time log - 137.6, Resid. Value - -0.27|
+0 Hz Continued: Max Euclidean error --> Access Index - 983, Time log - 137.6, Max Euclidean error - 0.282, X comp - -0.08, Y comp - -0.27
+
+
+----------------------------------------------------------------
+Initial Point Error report by Hz:
+0 Hz: Access Index - 0, Time log - 39.1, X Resid. Value - 0.03, Y Resid. Value - 0.1, 2D initial recorded Euclidean distance error - 0.104
+
+
+----------------------------------------------------------------
+Final Point Error report by Hz:
+0 Hz: Access Index - 2624, Time Log - 302.02, X component residual - -0.07, Y component residual - -0.07, 2D final recorded euclidean error - 0.099
+
+
+----------------------------------------------------------------
+End of Report
